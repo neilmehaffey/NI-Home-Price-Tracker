@@ -364,13 +364,17 @@
         const timelineLabels = generateTimelineLabels();
 
         // Calculate synthetic historical movement vector simulating exact UK-NI structural trends
-        const getMarketMultiplier = (index) => {
+        const getMarketMultiplier = (index, councilId = 0) => {
             let multiplier = 1.0;
+            
+            // Inject a unique variance modifier based on the council to ensure QoQ/YoY/HPI differ properly
+            const variance = (councilId % 7 - 3) * 0.0018; 
+
             for (let i = 0; i <= index; i++) {
-                if (i < 16) multiplier += 0.008; // Pre-pandemic
-                else if (i < 26) multiplier += 0.022; // Pandemic spike
-                else if (i < 31) multiplier -= 0.005; // Correction
-                else multiplier += 0.012; // Recovery
+                if (i < 16) multiplier += (0.008 + variance); // Pre-pandemic
+                else if (i < 26) multiplier += (0.022 + variance * 1.2); // Pandemic spike
+                else if (i < 31) multiplier -= (0.005 - variance * 0.5); // Correction
+                else multiplier += (0.012 + variance); // Recovery
             }
             return multiplier;
         };
@@ -386,13 +390,14 @@
             // Fallback: If no real data yet, use simulation with full dimension depth
             const base = councilBasePrice[council] || 150000;
             const typeModifier = propertyModifiers[propertyType] || 1.0;
+            const councilId = councils.indexOf(council); // Get index for variance
             const dataPoints = [];
 
             // Compute values sequentially to establish clean HPI indexes and growth vectors
-            let firstPrice = base * typeModifier * getMarketMultiplier(0);
+            let firstPrice = base * typeModifier * getMarketMultiplier(0, councilId);
 
             timelineLabels.forEach((label, idx) => {
-                const mult = getMarketMultiplier(idx);
+                const mult = getMarketMultiplier(idx, councilId);
                 let price = base * typeModifier * mult;
                 let medianPrice = price * 0.91; 
 
@@ -402,14 +407,14 @@
                 // QoQ growth
                 let qoq = 0;
                 if (idx > 0) {
-                    let prevPrice = base * typeModifier * getMarketMultiplier(idx - 1);
+                    let prevPrice = base * typeModifier * getMarketMultiplier(idx - 1, councilId);
                     qoq = ((price - prevPrice) / prevPrice) * 100;
                 }
 
                 // YoY growth (4 quarters prior)
                 let yoy = 0;
                 if (idx >= 4) {
-                    let prevYrPrice = base * typeModifier * getMarketMultiplier(idx - 4);
+                    let prevYrPrice = base * typeModifier * getMarketMultiplier(idx - 4, councilId);
                     yoy = ((price - prevYrPrice) / prevYrPrice) * 100;
                 }
 
@@ -653,10 +658,53 @@
             renderChart();
         };
 
+        const updateHighlights = () => {
+            let mostAffordable = { name: '', price: Infinity };
+            let highestValue = { name: '', price: 0 };
+            let growthLeader = { name: '', rate: -Infinity };
+
+            councils.forEach(council => {
+                const dataset = buildComprehensiveDataset(council, currentPropertyType);
+                if (!dataset || dataset.length === 0) return;
+                
+                const latest = dataset[dataset.length - 1];
+                const earliest = dataset[0];
+
+                // Calculate most affordable vs highest value
+                if (latest.averagePrice < mostAffordable.price) {
+                    mostAffordable = { name: council, price: latest.averagePrice };
+                }
+                if (latest.averagePrice > highestValue.price) {
+                    highestValue = { name: council, price: latest.averagePrice };
+                }
+
+                // Calculate overall historic growth trajectory
+                const overallGrowth = ((latest.averagePrice - earliest.averagePrice) / earliest.averagePrice) * 100;
+                if (overallGrowth > growthLeader.rate) {
+                    growthLeader = { name: council, rate: overallGrowth };
+                }
+            });
+
+            // Write dynamically to the DOM
+            if (mostAffordable.name) {
+                document.getElementById("mostAffordableLabel").innerText = mostAffordable.name;
+                document.getElementById("mostAffordablePrice").innerText = `Avg: £${mostAffordable.price.toLocaleString()}`;
+            }
+            if (highestValue.name) {
+                document.getElementById("highestValueLabel").innerText = highestValue.name;
+                document.getElementById("highestValuePrice").innerText = `Avg: £${highestValue.price.toLocaleString()}`;
+            }
+            if (growthLeader.name) {
+                document.getElementById("growthLeaderLabel").innerText = growthLeader.name;
+                document.getElementById("growthLeaderRate").innerText = `${growthLeader.rate >= 0 ? '+' : ''}${growthLeader.rate.toFixed(1)}% Overall`;
+            }
+        };
+
         const updateMainAnalysis = () => {
             renderCouncilGrid();
             populateCommentarySelector();
             updateCouncilIntelBox();
+            updateHighlights(); // Ensure highlights update whenever filters change
             renderChart(); // Redraw chart for new dataset
         };
 
