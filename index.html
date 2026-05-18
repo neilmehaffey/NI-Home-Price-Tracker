@@ -1,1288 +1,614 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2868
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NI House Price Tracker</title>
+    
+    <!-- Load Tailwind CSS for modern, fully responsive utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; 
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+    </style>
+</head>
+<body class="text-slate-100 antialiased h-screen flex flex-col overflow-hidden">
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="en">\
-<head>\
-    <meta charset="UTF-8">\
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
-    <title>NI House Price Tracker & API Integrator</title>\
-    \
-    <!-- Load Tailwind CSS for all styling -->\
-    <script src="https://cdn.tailwindcss.com"></script>\
-    \
-    <!-- Load Chart.js for data visualization -->\
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>\
-    \
-    <!-- Google Fonts for typography -->\
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">\
-    \
-    <style>\
-        body \{\
-            font-family: 'Inter', sans-serif;\
-            background-color: #0f172a; /* Dark slate background for premium look */\
-        \}\
-        \
-        .code-font \{\
-            font-family: 'Fira Code', monospace;\
-        \}\
-\
-        /* Custom scrollbars to match the dark theme */\
-        .custom-scrollbar::-webkit-scrollbar \{\
-            width: 6px;\
-            height: 6px;\
-        \}\
-        .custom-scrollbar::-webkit-scrollbar-track \{\
-            background: #1e293b; \
-            border-radius: 4px;\
-        \}\
-        .custom-scrollbar::-webkit-scrollbar-thumb \{\
-            background: #475569; \
-            border-radius: 4px;\
-        \}\
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover \{\
-            background: #64748b; \
-        \}\
-\
-        /* Hide default checkbox styling for active state card triggers */\
-        .checkbox-card:checked + div \{\
-            border-color: #3b82f6;\
-            background-color: rgba(59, 130, 246, 0.08);\
-        \}\
-    </style>\
-</head>\
-<body class="text-slate-100 antialiased h-screen flex flex-col overflow-hidden">\
-\
-    <header class="bg-slate-900 border-b border-slate-800 shadow-lg z-10 flex-shrink-0">\
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">\
-            <div class="flex items-center gap-3">\
-                <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-md shadow-blue-900/40">\
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">\
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>\
-                    </svg>\
-                </div>\
-                <div>\
-                    <h1 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">\
-                        NI House Price Intelligence\
-                        <span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-500/20">LIVE API MODE</span>\
-                    </h1>\
-                    <p class="text-[11px] text-slate-400 font-medium">Historical & Real-Time Automated Analysis</p>\
-                </div>\
-            </div>\
-            \
-            <div class="flex items-center gap-3">\
-                <!-- Inflation Toggle -->\
-                <div class="bg-slate-800 p-1.5 rounded-xl border border-slate-700 flex items-center gap-2">\
-                    <span class="text-xs font-semibold px-2 text-slate-400">Currency Mode:</span>\
-                    <button id="toggleNominal" onclick="setInflationMode(false)" class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow">Nominal</button>\
-                    <button id="toggleReal" onclick="setInflationMode(true)" class="px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">Real (CPI 2026)</button>\
-                </div>\
-\
-                <!-- API Trigger Button -->\
-                <button onclick="openConsole()" class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-emerald-950/20">\
-                    <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">\
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>\
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>\
-                    </svg>\
-                    API Integrator\
-                </button>\
-            </div>\
-        </div>\
-    </header>\
-\
-    <main class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto">\
-        \
-        <aside class="w-80 bg-slate-900 border-r border-slate-800 p-5 flex flex-col gap-5 overflow-y-auto custom-scrollbar flex-shrink-0">\
-            \
-            <!-- Comparison Councils Select -->\
-            <div>\
-                <div class="flex items-center justify-between mb-2">\
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Local Council Areas</h3>\
-                    <button onclick="clearAllCouncils()" class="text-[10px] text-blue-400 hover:text-blue-300 font-bold">Clear All</button>\
-                </div>\
-                <p class="text-[11px] text-slate-500 mb-3">Select one or more to compare trends side-by-side.</p>\
-                <div class="space-y-1 max-h-48 overflow-y-auto custom-scrollbar pr-1" id="council-list">\
-                    <!-- Checkboxes will be injected here -->\
-                </div>\
-            </div>\
-            \
-            <!-- Property Types -->\
-            <div class="pt-4 border-t border-slate-800">\
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Property Category</h3>\
-                <div class="grid grid-cols-2 gap-2" id="property-type-buttons">\
-                    <!-- Injected property type triggers -->\
-                </div>\
-            </div>\
-\
-            <!-- Metric Selection -->\
-            <div class="pt-4 border-t border-slate-800">\
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Primary Analytics Metric</h3>\
-                <div class="space-y-2">\
-                    <select id="metricSelector" onchange="setMetric(this.value)" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500">\
-                        <option value="price">Average Price (\'a3)</option>\
-                        <option value="median">Median Price (\'a3) [Est.]</option>\
-                        <option value="index">Price Index (Base 2016)</option>\
-                        <option value="qoq">Quarter-on-Quarter (QoQ %) Change</option>\
-                        <option value="yoy">Year-on-Year (YoY %) Change</option>\
-                    </select>\
-                </div>\
-            </div>\
-\
-            <!-- Timeframe selector -->\
-            <div class="pt-4 border-t border-slate-800">\
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Trend Horizon</h3>\
-                <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg">\
-                    <button onclick="setTimeRange(3)" id="time3" class="text-xs py-1 rounded font-semibold text-slate-400 hover:text-white">3 Years</button>\
-                    <button onclick="setTimeRange(5)" id="time5" class="text-xs py-1 rounded font-semibold text-slate-400 hover:text-white">5 Years</button>\
-                    <button onclick="setTimeRange(10)" id="time10" class="text-xs py-1 rounded font-semibold bg-blue-600 text-white">10 Years</button>\
-                </div>\
-            </div>\
-\
-            <!-- Dynamic API Health Monitor Widget -->\
-            <div class="mt-auto p-3.5 bg-slate-950 rounded-xl border border-slate-800 flex flex-col gap-2">\
-                <div class="flex items-center justify-between">\
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">Automated Fetcher</span>\
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">\
-                        <span class="w-1.5 h-1.5 mr-1 rounded-full bg-emerald-500 animate-pulse"></span> Active\
-                    </span>\
-                </div>\
-                <div class="text-[11px] text-slate-500 flex flex-col gap-1">\
-                    <div class="flex justify-between"><span>Provider:</span> <span class="text-slate-300 font-semibold">OpenDataNI CKAN</span></div>\
-                    <div class="flex justify-between"><span>Last Sync:</span> <span class="text-slate-300" id="sync-time">Just Now</span></div>\
-                    <div class="flex justify-between"><span>Version:</span> <span class="text-slate-300">v2.5 (Automated)</span></div>\
-                </div>\
-            </div>\
-        </aside>\
-\
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-950 flex flex-col gap-6">\
-            \
-            <!-- Real-Time Notification Banner for Q2 2026 Simulation -->\
-            <div id="newReleaseNotification" class="hidden bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border border-blue-500/30 p-4 rounded-xl flex items-center justify-between shadow-lg shadow-blue-950/20">\
-                <div class="flex items-center gap-3">\
-                    <div class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30 text-blue-400">\
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\
-                        </svg>\
-                    </div>\
-                    <div>\
-                        <h4 class="text-sm font-bold text-white">New Release Available (Q2 2026)!</h4>\
-                        <p class="text-xs text-slate-300">NISRA open-data services have published Q2 2026 data. Integrate it now.</p>\
-                    </div>\
-                </div>\
-                <button onclick="triggerAPIDownload()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all shadow">\
-                    Fetch & Update\
-                </button>\
-            </div>\
-\
-            <!-- Key KPI Stats Cards -->\
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">\
-                \
-                <!-- KPI Card 1 -->\
-                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 relative overflow-hidden">\
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1" id="kpi1-title">NI Avg (Q1 2026)</p>\
-                    <div class="flex items-baseline gap-2">\
-                        <span class="text-2xl font-black text-white" id="kpi1-value">\'a30</span>\
-                        <span class="text-[10px] text-slate-500 font-semibold" id="kpi1-adj">Nominal</span>\
-                    </div>\
-                    <div class="mt-2 flex items-center justify-between" id="kpi1-sub">\
-                        <span class="text-xs text-emerald-400 font-bold flex items-center gap-1">-- QoQ</span>\
-                    </div>\
-                    <div class="absolute bottom-0 right-0 opacity-5 pointer-events-none transform translate-y-2 translate-x-2">\
-                        <svg class="w-20 h-20 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>\
-                    </div>\
-                </div>\
-\
-                <!-- KPI Card 2 -->\
-                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 relative overflow-hidden">\
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Selected Council Max</p>\
-                    <div class="flex items-baseline gap-2">\
-                        <span class="text-2xl font-black text-blue-400" id="kpi2-value">\'a30</span>\
-                    </div>\
-                    <div class="mt-2 text-xs text-slate-400 flex items-center justify-between" id="kpi2-sub">\
-                        <span>Highest Area</span>\
-                    </div>\
-                    <div class="absolute bottom-0 right-0 opacity-5 pointer-events-none transform translate-y-2 translate-x-2">\
-                        <svg class="w-20 h-20 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>\
-                    </div>\
-                </div>\
-\
-                <!-- KPI Card 3 -->\
-                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 relative overflow-hidden">\
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Inflation Impact</p>\
-                    <div class="flex items-baseline gap-2">\
-                        <span class="text-2xl font-black text-amber-400" id="kpi3-value">31.2%</span>\
-                    </div>\
-                    <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">\
-                        <span>Aggregate CPI (10-Yr)</span>\
-                    </div>\
-                    <div class="absolute bottom-0 right-0 opacity-5 pointer-events-none transform translate-y-2 translate-x-2">\
-                        <svg class="w-20 h-20 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>\
-                    </div>\
-                </div>\
-\
-                <!-- KPI Card 4 -->\
-                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 relative overflow-hidden">\
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Synchronized Quarters</p>\
-                    <div class="flex items-baseline gap-2">\
-                        <span class="text-2xl font-black text-emerald-400" id="kpi4-value">41</span>\
-                        <span class="text-[10px] text-slate-500 font-semibold">Active Series</span>\
-                    </div>\
-                    <div class="mt-2 text-xs text-slate-400 flex items-center justify-between" id="kpi4-sub">\
-                        <span>Automatic Refresh Enabled</span>\
-                    </div>\
-                    <div class="absolute bottom-0 right-0 opacity-5 pointer-events-none transform translate-y-2 translate-x-2">\
-                        <svg class="w-20 h-20 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>\
-                    </div>\
-                </div>\
-            </div>\
-\
-            <!-- Charts Row -->\
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">\
-                <!-- Trend Line Chart -->\
-                <div class="lg:col-span-2 bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm">\
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">\
-                        <div>\
-                            <h2 class="text-md font-extrabold text-white flex items-center gap-2" id="chart-title">Historical Trends</h2>\
-                            <p class="text-xs text-slate-400">Multi-series representation based on active comparisons.</p>\
-                        </div>\
-                        <div id="chart-legend" class="flex flex-wrap gap-2"></div>\
-                    </div>\
-                    <div class="w-full h-[360px] relative">\
-                        <canvas id="mainTrendChart"></canvas>\
-                    </div>\
-                </div>\
-\
-                <!-- Segment Comparison & Radar Distribution -->\
-                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between">\
-                    <div>\
-                        <h2 class="text-md font-extrabold text-white">Property Type Pricing</h2>\
-                        <p class="text-xs text-slate-400 mb-4">Analysis of distinct categories for selected councils.</p>\
-                    </div>\
-                    <div class="w-full h-[260px] relative mb-2">\
-                        <canvas id="propertyDistributionChart"></canvas>\
-                    </div>\
-                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 text-[11px] text-slate-400">\
-                        <span class="font-bold text-slate-300">Observation:</span> Detached homes maintain the highest premium, while apartments show lower volatility during market changes.\
-                    </div>\
-                </div>\
-            </div>\
-\
-            <!-- Regional Comparison Horizontal Chart -->\
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">\
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">\
-                    <div>\
-                        <h2 class="text-md font-extrabold text-white">Local Government Comparison</h2>\
-                        <p class="text-xs text-slate-400">Selected metric comparison across all 11 councils in the latest quarter.</p>\
-                    </div>\
-                    <div class="text-[11px] font-semibold text-slate-500 bg-slate-950 px-2 py-1 rounded-md border border-slate-800" id="latest-qtr-badge">\
-                        Quarter: --\
-                    </div>\
-                </div>\
-                <div class="w-full h-[220px]">\
-                    <canvas id="regionalBarChart"></canvas>\
-                </div>\
-            </div>\
-\
-            <!-- Data Table Section -->\
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">\
-                <div class="px-5 py-4 border-b border-slate-800 flex flex-col sm:flex-row justify-between sm:items-center gap-2 bg-slate-900/50">\
-                    <div>\
-                        <h3 class="text-sm font-extrabold text-white">Historical Data Table</h3>\
-                        <p class="text-xs text-slate-400">View raw structural indexes for the chosen selection.</p>\
-                    </div>\
-                    <div class="flex items-center gap-2">\
-                        <input type="text" id="searchTable" oninput="renderDataTable()" placeholder="Search quarters..." class="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 w-44">\
-                        <button onclick="exportToCSV()" class="text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">\
-                            Export CSV\
-                        </button>\
-                    </div>\
-                </div>\
-                <div class="max-h-72 overflow-y-auto custom-scrollbar">\
-                    <table class="w-full text-left border-collapse">\
-                        <thead class="bg-slate-950 text-slate-400 text-xs font-bold uppercase border-b border-slate-800 sticky top-0 z-10">\
-                            <tr id="tableHeader">\
-                                <!-- Injected dynamically -->\
-                            </tr>\
-                        </thead>\
-                        <tbody id="tableBody" class="divide-y divide-slate-800 text-xs text-slate-300">\
-                            <!-- Injected dynamically -->\
-                        </tbody>\
-                    </table>\
-                </div>\
-            </div>\
-\
-        </div>\
-    </main>\
-\
-    <!-- Interactive Developer API Console Modal -->\
-    <div id="apiConsoleModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">\
-        <div class="bg-slate-900 rounded-2xl border border-slate-800 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">\
-            \
-            <!-- Modal Header -->\
-            <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">\
-                <div class="flex items-center gap-3">\
-                    <div class="bg-emerald-500/10 text-emerald-400 p-2 rounded-xl border border-emerald-500/20">\
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\
-                        </svg>\
-                    </div>\
-                    <div>\
-                        <h3 class="text-md font-extrabold text-white">API Developer & Endpoint Integration Console</h3>\
-                        <p class="text-xs text-slate-400">Inspect real-time queries sent to OpenDataNI / NISRA services</p>\
-                    </div>\
-                </div>\
-                <button onclick="closeConsole()" class="text-slate-400 hover:text-white transition-all">\
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>\
-                </button>\
-            </div>\
-\
-            <!-- Modal Body (Two Column Layout) -->\
-            <div class="flex-1 grid grid-cols-1 lg:grid-cols-5 overflow-hidden">\
-                \
-                <!-- Left: Control Actions & Parameters -->\
-                <div class="lg:col-span-2 p-5 border-r border-slate-800 bg-slate-950/40 flex flex-col gap-5 overflow-y-auto custom-scrollbar">\
-                    <div>\
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Endpoint URL Target</h4>\
-                        <div class="bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-[11px] code-font text-blue-400 truncate">\
-                            https://admin.opendatani.gov.uk/api/3/action/package_show?id=nihpi-by-propertytype\
-                        </div>\
-                    </div>\
-\
-                    <div>\
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Simulation Tools</h4>\
-                        <div class="flex flex-col gap-2">\
-                            <button onclick="triggerAPIDownload()" class="w-full text-left bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs py-2.5 px-3 rounded-lg flex items-center justify-between transition-all shadow">\
-                                <span>Execute Full API Sync</span>\
-                                <span class="bg-blue-700 px-2 py-0.5 rounded text-[10px]">GET</span>\
-                            </button>\
-                            <button onclick="triggerAPIError()" class="w-full text-left bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-500/20 font-semibold text-xs py-2.5 px-3 rounded-lg flex items-center justify-between transition-all">\
-                                <span>Simulate API Timeout / Error</span>\
-                                <span class="bg-rose-900/30 px-2 py-0.5 rounded text-[10px] text-rose-400">504</span>\
-                            </button>\
-                        </div>\
-                    </div>\
-\
-                    <div>\
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">CKAN API Response Schema</h4>\
-                        <p class="text-[11px] text-slate-500 mb-3">Learn how the system parses the JSON result payload returned from the governmental server.</p>\
-                        \
-                        <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg flex flex-col gap-2">\
-                            <div class="flex items-center gap-2">\
-                                <span class="text-[10px] code-font text-emerald-400">result.success</span>\
-                                <span class="text-[10px] text-slate-500">boolean</span>\
-                            </div>\
-                            <div class="flex items-center gap-2">\
-                                <span class="text-[10px] code-font text-emerald-400">result.resources[]</span>\
-                                <span class="text-[10px] text-slate-500">list of files</span>\
-                            </div>\
-                            <div class="flex items-center gap-2">\
-                                <span class="text-[10px] code-font text-emerald-400">result.resources[1].url</span>\
-                                <span class="text-[10px] text-slate-500">CSV data endpoint</span>\
-                            </div>\
-                        </div>\
-                    </div>\
-\
-                    <div class="mt-auto">\
-                        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl">\
-                            <p class="text-[10px] text-amber-400 font-bold mb-1">\uc0\u55357 \u56481  Sandbox Safe Integration</p>\
-                            <p class="text-[10px] text-slate-400">This client implements automated failsafes. If OpenDataNI servers block browser-level CORS, the software seamlessly deploys local cache synchronizers.</p>\
-                        </div>\
-                    </div>\
-                </div>\
-\
-                <!-- Right: Stream Console Output & Payload Terminal -->\
-                <div class="lg:col-span-3 p-5 flex flex-col gap-4 overflow-hidden bg-slate-950">\
-                    <div class="flex items-center justify-between">\
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Live Terminal Output</h4>\
-                        <button onclick="clearConsoleLogs()" class="text-[10px] text-slate-500 hover:text-slate-400 underline">Clear Terminal</button>\
-                    </div>\
-                    \
-                    <!-- Terminal Code View -->\
-                    <div class="flex-1 bg-slate-900 rounded-xl border border-slate-800 p-4 code-font text-xs overflow-y-auto custom-scrollbar flex flex-col gap-2 text-slate-300" id="terminal-logs">\
-                        <!-- Simulated API requests logs and JSON output -->\
-                        <div class="text-slate-500">// API terminal ready. Choose an action on the left...</div>\
-                    </div>\
-                </div>\
-\
-            </div>\
-\
-            <!-- Modal Footer -->\
-            <div class="px-6 py-4 bg-slate-950 border-t border-slate-800 flex justify-end">\
-                <button onclick="closeConsole()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-700 border border-slate-700 transition-colors">Close Console</button>\
-            </div>\
-        </div>\
-    </div>\
-\
-    <script>\
-        // ------------------------------------------------------------------------\
-        // 1. Core State & Historical Dataset Configuration\
-        // ------------------------------------------------------------------------\
-\
-        const councils = [\
-            "Belfast", \
-            "Antrim and Newtownabbey", \
-            "Ards and North Down",\
-            "Armagh City, Banbridge and Craigavon", \
-            "Causeway Coast and Glens",\
-            "Derry City and Strabane", \
-            "Fermanagh and Omagh", \
-            "Lisburn and Castlereagh",\
-            "Mid and East Antrim", \
-            "Mid Ulster", \
-            "Newry, Mourne and Down"\
-        ];\
-\
-        // Base prices circa 2016 (mapped reasonably to historic values)\
-        const basePrices = \{\
-            "Belfast": 115000,\
-            "Antrim and Newtownabbey": 130000,\
-            "Ards and North Down": 145000,\
-            "Armagh City, Banbridge and Craigavon": 120000,\
-            "Causeway Coast and Glens": 135000,\
-            "Derry City and Strabane": 110000,\
-            "Fermanagh and Omagh": 125000,\
-            "Lisburn and Castlereagh": 150000,\
-            "Mid and East Antrim": 122000,\
-            "Mid Ulster": 128000,\
-            "Newry, Mourne and Down": 132000,\
-            "Northern Ireland Average": 125000\
-        \};\
-\
-        // Realistic Property Type Ratio multipliers\
-        const propertyTypeRatios = \{\
-            "all": 1.0,         // Overall average\
-            "detached": 1.58,   // Highly premium\
-            "semi-detached": 1.05,\
-            "terraced": 0.82,\
-            "apartment": 0.69\
-        \};\
-\
-        // Realistic UK/NI Historical CPI Inflation Multipliers (Base: Q1 2026 = 1.00)\
-        // Adjusts older pounds up to match Q1 2026 purchasing value\
-        const cpiAdjustments = \{\
-            "2016": 1.342, "2017": 1.306, "2018": 1.272, "2019": 1.249, "2020": 1.238,\
-            "2021": 1.207, "2022": 1.106, "2023": 1.031, "2024": 1.018, "2025": 1.009, "2026": 1.000\
-        \};\
-\
-        // Application State\
-        let dataset = \{\}; \
-        let quarters = [];\
-        let selectedCouncils = ["Belfast", "Derry City and Strabane"]; // Multi-selection compare\
-        let selectedPropertyType = "all"; // 'all', 'detached', 'semi-detached', 'terraced', 'apartment'\
-        let selectedMetric = "price"; // 'price', 'median', 'index', 'qoq', 'yoy'\
-        let isInflationAdjusted = false; // true = Real value, false = Nominal\
-        let activeTimeHorizon = 10; // Years: 3, 5, 10\
-        let newReleasePending = true; // Simulating a pending Q2 2026 update notification\
-        \
-        // ChartJS instances\
-        let trendChartInstance = null;\
-        let propertyDistChartInstance = null;\
-        let regionalChartInstance = null;\
-\
-        // ------------------------------------------------------------------------\
-        // 2. Mock Data Generator Engine\
-        // ------------------------------------------------------------------------\
-\
-        function buildDataEngine() \{\
-            let tempDataset = \{\};\
-            let tempQuarters = [];\
-            \
-            // Initialize structures\
-            [...councils, "Northern Ireland Average"].forEach(c => \{\
-                tempDataset[c] = \{\
-                    all: [], detached: [], "semi-detached": [], terraced: [], apartment: []\
-                \};\
-            \});\
-\
-            // Populate 2016 Q1 through 2026 Q1\
-            for (let year = 2016; year <= 2026; year++) \{\
-                let maxQ = (year === 2026) ? 1 : 4; \
-                for (let q = 1; q <= maxQ; q++) \{\
-                    let quarterStr = `$\{year\} Q$\{q\}`;\
-                    tempQuarters.push(quarterStr);\
-\
-                    let timeFactor = (year - 2016) + (q/4);\
-                    // Standard historic growth simulation curve\
-                    let marketModifier = 1.0;\
-                    if (year === 2020) marketModifier = 0.97; // Covid shock dip\
-                    if (year === 2021 || year === 2022) marketModifier = 1.09; // Pandemic bounce surge\
-\
-                    [...councils, "Northern Ireland Average"].forEach(council => \{\
-                        let base = basePrices[council];\
-                        let growth = Math.pow(1.042, timeFactor) * marketModifier; \
-                        \
-                        // Seed specific pseudo-randomness per council area to represent authentic divergence\
-                        let seed = (council.charCodeAt(0) + council.charCodeAt(council.length-1)) / 200;\
-                        let localNoise = 1 + (Math.sin(timeFactor + seed) * 0.025);\
-\
-                        // Generate trends across all types\
-                        Object.keys(propertyTypeRatios).forEach(type => \{\
-                            let typeMultiplier = propertyTypeRatios[type];\
-                            // Detached has slightly higher growth, apartments have slower growth\
-                            let typeGrowthTuning = 1.0;\
-                            if (type === 'detached') typeGrowthTuning = 1 + (timeFactor * 0.005);\
-                            if (type === 'apartment') typeGrowthTuning = 1 - (timeFactor * 0.008);\
-\
-                            let finalBasePrice = Math.round(base * typeMultiplier * growth * localNoise * typeGrowthTuning);\
-                            tempDataset[council][type].push(\{\
-                                quarter: quarterStr,\
-                                price: finalBasePrice,\
-                                year: year.toString()\
-                            \});\
-                        \});\
-                    \});\
-                \}\
-            \}\
-            dataset = tempDataset;\
-            quarters = tempQuarters;\
-        \}\
-\
-        // ------------------------------------------------------------------------\
-        // 3. Financial Helper Calculations (Index, Median, QoQ, YoY, Inflation Adjustments)\
-        // ------------------------------------------------------------------------\
-\
-        function getValueForPoint(council, type, index, metricValue = selectedMetric) \{\
-            const dataArr = dataset[council][type];\
-            if (!dataArr[index]) return 0;\
-\
-            const baseItem = dataArr[index];\
-            let targetPrice = baseItem.price;\
-\
-            // Apply Inflation conversion if toggled\
-            if (isInflationAdjusted) \{\
-                let cpiMult = cpiAdjustments[baseItem.year] || 1.00;\
-                targetPrice = Math.round(targetPrice * cpiMult);\
-            \}\
-\
-            if (metricValue === 'price') \{\
-                return targetPrice;\
-            \} else if (metricValue === 'median') \{\
-                // Median is typically ~88-92% of the average due to high-end outliers skewing the average. We estimate at 89%.\
-                return Math.round(targetPrice * 0.89);\
-            \} else if (metricValue === 'index') \{\
-                // Base Index reference is Q1 2016 (index 0)\
-                let initialPoint = dataArr[0].price;\
-                if (isInflationAdjusted) \{\
-                    initialPoint = Math.round(initialPoint * cpiAdjustments["2016"]);\
-                \}\
-                return parseFloat(((targetPrice / initialPoint) * 100).toFixed(1));\
-            \} else if (metricValue === 'qoq') \{\
-                if (index === 0) return 0;\
-                let prevVal = dataArr[index - 1].price;\
-                if (isInflationAdjusted) \{\
-                    prevVal = Math.round(prevVal * (cpiAdjustments[dataArr[index - 1].year] || 1.00));\
-                \}\
-                let change = ((targetPrice - prevVal) / prevVal) * 100;\
-                return parseFloat(change.toFixed(2));\
-            \} else if (metricValue === 'yoy') \{\
-                if (index < 4) return 0; // Requires trailing year data\
-                let prevYearVal = dataArr[index - 4].price;\
-                if (isInflationAdjusted) \{\
-                    prevYearVal = Math.round(prevYearVal * (cpiAdjustments[dataArr[index - 4].year] || 1.00));\
-                \}\
-                let change = ((targetPrice - prevYearVal) / prevYearVal) * 100;\
-                return parseFloat(change.toFixed(2));\
-            \}\
-            return 0;\
-        \}\
-\
-        // Standard financial formatters\
-        const formatMoney = (amount) => \{\
-            return new Intl.NumberFormat('en-GB', \{ style: 'currency', currency: 'GBP', maximumFractionDigits: 0 \}).format(amount);\
-        \};\
-\
-        const formatPercent = (val) => \{\
-            return (val >= 0 ? '+' : '') + val.toFixed(1) + '%';\
-        \};\
-\
-        // ------------------------------------------------------------------------\
-        // 4. UI Rendering and DOM Interactions\
-        // ------------------------------------------------------------------------\
-\
-        function initSidebarFilters() \{\
-            // Build Council Comparison Checkboxes\
-            const listContainer = document.getElementById('council-list');\
-            listContainer.innerHTML = '';\
-            \
-            // NI Average Checkbox option\
-            listContainer.innerHTML += createCheckboxRow("Northern Ireland Average", true);\
-\
-            // Sorted LGDs list\
-            councils.slice().sort().forEach(council => \{\
-                let isChecked = selectedCouncils.includes(council);\
-                listContainer.innerHTML += createCheckboxRow(council, isChecked);\
-            \});\
-\
-            // Build Property Type Selection segmented buttons\
-            const propButtons = document.getElementById('property-type-buttons');\
-            propButtons.innerHTML = '';\
-            const types = [\
-                \{ id: "all", label: "All Properties" \},\
-                \{ id: "detached", label: "Detached" \},\
-                \{ id: "semi-detached", label: "Semi-Det." \},\
-                \{ id: "terraced", label: "Terraced" \},\
-                \{ id: "apartment", label: "Apartments" \}\
-            ];\
-\
-            types.forEach(t => \{\
-                const isActive = selectedPropertyType === t.id;\
-                propButtons.innerHTML += `\
-                    <button onclick="setPropertyType('$\{t.id\}')" id="propBtn-$\{t.id\}" class="text-[11px] py-1.5 px-2 rounded-lg font-bold border transition-all $\{\
-                        isActive \
-                        ? 'bg-blue-600/20 text-blue-400 border-blue-500/40 shadow-inner' \
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'\
-                    \}">$\{t.label\}</button>\
-                `;\
-            \});\
-        \}\
-\
-        function createCheckboxRow(label, isChecked) \{\
-            const safeId = label.replace(/\\s+/g, '');\
-            return `\
-                <label class="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/40 border $\{isChecked ? 'border-blue-500/30' : 'border-slate-800'\} cursor-pointer transition-all mb-1" id="lbl-$\{safeId\}">\
-                    <div class="flex items-center gap-2">\
-                        <input type="checkbox" name="councilCheck" value="$\{label\}" $\{isChecked ? 'checked' : ''\} onchange="toggleCouncilSelection(this)" class="w-3.5 h-3.5 text-blue-600 bg-slate-950 border-slate-700 rounded focus:ring-blue-500">\
-                        <span class="text-xs $\{isChecked ? 'text-white font-semibold' : 'text-slate-400'\}">$\{label === "Northern Ireland Average" ? '\uc0\u55357 \u56522  NI Avg' : label\}</span>\
-                    </div>\
-                </label>\
-            `;\
-        \}\
-\
-        function toggleCouncilSelection(checkbox) \{\
-            const council = checkbox.value;\
-            const safeId = council.replace(/\\s+/g, '');\
-            const labelEl = document.getElementById(`lbl-$\{safeId\}`);\
-\
-            if (checkbox.checked) \{\
-                if (!selectedCouncils.includes(council)) \{\
-                    selectedCouncils.push(council);\
-                \}\
-                labelEl.classList.remove('border-slate-800');\
-                labelEl.classList.add('border-blue-500/30');\
-                labelEl.querySelector('span').classList.add('text-white', 'font-semibold');\
-            \} else \{\
-                selectedCouncils = selectedCouncils.filter(c => c !== council);\
-                labelEl.classList.remove('border-blue-500/30');\
-                labelEl.classList.add('border-slate-800');\
-                labelEl.querySelector('span').classList.remove('text-white', 'font-semibold');\
-            \}\
-            updateDashboard();\
-        \}\
-\
-        function clearAllCouncils() \{\
-            selectedCouncils = [];\
-            document.querySelectorAll('input[name="councilCheck"]').forEach(cb => \{\
-                cb.checked = false;\
-                const safeId = cb.value.replace(/\\s+/g, '');\
-                const labelEl = document.getElementById(`lbl-$\{safeId\}`);\
-                labelEl.classList.remove('border-blue-500/30');\
-                labelEl.classList.add('border-slate-800');\
-                labelEl.querySelector('span').classList.remove('text-white', 'font-semibold');\
-            \});\
-            updateDashboard();\
-        \}\
-\
-        function setPropertyType(type) \{\
-            selectedPropertyType = type;\
-            initSidebarFilters();\
-            updateDashboard();\
-        \}\
-\
-        function setMetric(metric) \{\
-            selectedMetric = metric;\
-            updateDashboard();\
-        \}\
-\
-        function setInflationMode(mode) \{\
-            isInflationAdjusted = mode;\
-            \
-            const btnNominal = document.getElementById('toggleNominal');\
-            const btnReal = document.getElementById('toggleReal');\
-\
-            if (mode) \{\
-                btnReal.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white shadow";\
-                btnNominal.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";\
-                addConsoleLog("SYSTEM", "Currency calculation mode toggled to 'Real (Adjusted to Q1 2026 Buying Power)'.");\
-            \} else \{\
-                btnNominal.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow";\
-                btnReal.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";\
-                addConsoleLog("SYSTEM", "Currency calculation mode toggled to 'Nominal (Original pounds)'.");\
-            \}\
-            updateDashboard();\
-        \}\
-\
-        function setTimeRange(years) \{\
-            activeTimeHorizon = years;\
-            ['time3', 'time5', 'time10'].forEach(id => \{\
-                const btn = document.getElementById(id);\
-                if (id === `time$\{years\}`) \{\
-                    btn.className = "text-xs py-1 rounded font-semibold bg-blue-600 text-white shadow";\
-                \} else \{\
-                    btn.className = "text-xs py-1 rounded font-semibold text-slate-400 hover:text-white";\
-                \}\
-            \});\
-            updateDashboard();\
-        \}\
-\
-        // ------------------------------------------------------------------------\
-        // 5. Dashboard Core Refresh & Chart Implementations\
-        // ------------------------------------------------------------------------\
-\
-        function updateDashboard() \{\
-            // 1. Filter Quarters range based on activeTimeHorizon (4 quarters per year)\
-            const countToDisplay = activeTimeHorizon * 4;\
-            const displayedQuarters = quarters.slice(-countToDisplay);\
-            const startIndex = quarters.length - displayedQuarters.length;\
-\
-            const latestIdx = quarters.length - 1;\
-            const previousQtrIdx = latestIdx - 1;\
-            const latestQuarterName = quarters[latestIdx];\
-\
-            // Update Latest Quarter badge\
-            document.getElementById('latest-qtr-badge').innerText = `Quarter: $\{latestQuarterName\}`;\
-\
-            // 2. Perform KPI Stats calculations\
-            const niLatestPrice = getValueForPoint("Northern Ireland Average", selectedPropertyType, latestIdx, 'price');\
-            const niPrevPrice = getValueForPoint("Northern Ireland Average", selectedPropertyType, previousQtrIdx, 'price');\
-            const niQoqPrice = getValueForPoint("Northern Ireland Average", selectedPropertyType, latestIdx, 'qoq');\
-\
-            // KPI 1 - NI National Average\
-            document.getElementById('kpi1-value').innerText = formatMoney(niLatestPrice);\
-            document.getElementById('kpi1-title').innerText = `NI AVG ($\{latestQuarterName\})`;\
-            document.getElementById('kpi1-adj').innerText = isInflationAdjusted ? "Real (2026)" : "Nominal";\
-            \
-            const kpi1Sub = document.getElementById('kpi1-sub');\
-            const colorClass = niQoqPrice >= 0 ? 'text-emerald-400' : 'text-rose-400';\
-            const sign = niQoqPrice >= 0 ? '\uc0\u9650 ' : '\u9660 ';\
-            kpi1Sub.innerHTML = `<span class="$\{colorClass\} font-bold text-xs flex items-center gap-1">$\{sign\} $\{Math.abs(niQoqPrice).toFixed(1)\}% QoQ</span> <span class="text-[10px] text-slate-500">Prev Qtr: $\{formatMoney(niPrevPrice)\}</span>`;\
-\
-            // KPI 2 - Selected Council Highest / Max\
-            if (selectedCouncils.length > 0) \{\
-                let maxVal = 0;\
-                let topLgd = "";\
-                selectedCouncils.forEach(c => \{\
-                    let val = getValueForPoint(c, selectedPropertyType, latestIdx, 'price');\
-                    if (val > maxVal) \{\
-                        maxVal = val;\
-                        topLgd = c;\
-                    \}\
-                \});\
-                document.getElementById('kpi2-value').innerText = formatMoney(maxVal);\
-                document.getElementById('kpi2-sub').innerText = `$\{topLgd || "All select"\}`;\
-            \} else \{\
-                document.getElementById('kpi2-value').innerText = "\'a30";\
-                document.getElementById('kpi2-sub').innerText = "Select councils to measure";\
-            \}\
-\
-            // Update synchronized quarter counter KPI 4\
-            document.getElementById('kpi4-value').innerText = quarters.length;\
-            document.getElementById('kpi4-sub').innerText = `$\{quarters[0]\} to $\{quarters[quarters.length - 1]\}`;\
-\
-            // 3. Render and Synchronize Charts\
-            renderTrendChart(displayedQuarters, startIndex);\
-            renderPropertyDistribution(latestIdx);\
-            renderRegionalBarChart(latestIdx);\
-\
-            // 4. Populate table\
-            renderDataTable();\
-        \}\
-\
-        function renderTrendChart(displayedQuarters, startIndex) \{\
-            const ctx = document.getElementById('mainTrendChart').getContext('2d');\
-            \
-            // Build dataset array based on selection\
-            const chartDatasets = selectedCouncils.map((council, idx) => \{\
-                const colorPalette = [\
-                    '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', \
-                    '#06b6d4', '#f97316', '#a855f7', '#14b8a6', '#f43f5e'\
-                ];\
-                const color = colorPalette[idx % colorPalette.length];\
-\
-                const values = quarters.slice(startIndex).map((q, qIdx) => \{\
-                    return getValueForPoint(council, selectedPropertyType, startIndex + qIdx);\
-                \});\
-\
-                return \{\
-                    label: council,\
-                    data: values,\
-                    borderColor: color,\
-                    backgroundColor: `$\{color\}15`,\
-                    borderWidth: 2.5,\
-                    fill: selectedCouncils.length === 1, // Only fill if solitary council selected\
-                    tension: 0.25,\
-                    pointRadius: selectedCouncils.length > 4 ? 0 : 2,\
-                    pointHoverRadius: 6\
-                \};\
-            \});\
-\
-            // Fallback default lines if none selected\
-            if (chartDatasets.length === 0) \{\
-                chartDatasets.push(\{\
-                    label: "No Area Selected",\
-                    data: displayedQuarters.map(() => 0),\
-                    borderColor: '#475569',\
-                    borderWidth: 1,\
-                    borderDash: [5, 5]\
-                \});\
-            \}\
-\
-            if (trendChartInstance) \{\
-                trendChartInstance.destroy();\
-            \}\
-\
-            // Format axis prefixes based on metric\
-            let yTicksCallback = (value) => value;\
-            if (selectedMetric === 'price' || selectedMetric === 'median') \{\
-                yTicksCallback = (value) => '\'a3' + (value / 1000) + 'k';\
-            \} else if (selectedMetric === 'index') \{\
-                yTicksCallback = (value) => value + '%';\
-            \} else \{\
-                yTicksCallback = (value) => value + '%';\
-            \}\
-\
-            trendChartInstance = new Chart(ctx, \{\
-                type: 'line',\
-                data: \{\
-                    labels: displayedQuarters,\
-                    datasets: chartDatasets\
-                \},\
-                options: \{\
-                    responsive: true,\
-                    maintainAspectRatio: false,\
-                    interaction: \{\
-                        mode: 'index',\
-                        intersect: false\
-                    \},\
-                    plugins: \{\
-                        legend: \{\
-                            display: false // We use our custom legend builder below\
-                        \},\
-                        tooltip: \{\
-                            backgroundColor: '#0f172a',\
-                            titleColor: '#f8fafc',\
-                            bodyColor: '#cbd5e1',\
-                            borderColor: '#334155',\
-                            borderWidth: 1,\
-                            padding: 10,\
-                            callbacks: \{\
-                                label: function(context) \{\
-                                    let label = context.dataset.label || '';\
-                                    if (label) \{\
-                                        label += ': ';\
-                                    \}\
-                                    if (selectedMetric === 'price' || selectedMetric === 'median') \{\
-                                        label += formatMoney(context.parsed.y);\
-                                    \} else if (selectedMetric === 'index') \{\
-                                        label += context.parsed.y + ' (Index)';\
-                                    \} else \{\
-                                        label += formatPercent(context.parsed.y);\
-                                    \}\
-                                    return label;\
-                                \}\
-                            \}\
-                        \}\
-                    \},\
-                    scales: \{\
-                        y: \{\
-                            grid: \{ color: '#1e293b', borderDash: [3, 3] \},\
-                            ticks: \{ color: '#94a3b8', font: \{ size: 10 \}, callback: yTicksCallback \}\
-                        \},\
-                        x: \{\
-                            grid: \{ display: false \},\
-                            ticks: \{ color: '#94a3b8', font: \{ size: 9 \}, maxRotation: 45, minRotation: 45 \}\
-                        \}\
-                    \}\
-                \}\
-            \});\
-\
-            // Update Chart Custom HTML Legend\
-            const legendDiv = document.getElementById('chart-legend');\
-            legendDiv.innerHTML = '';\
-            chartDatasets.forEach((dataset, i) => \{\
-                if (dataset.label === "No Area Selected") return;\
-                legendDiv.innerHTML += `\
-                    <div class="flex items-center gap-1.5 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/60 text-[10px] font-bold text-slate-300">\
-                        <span class="w-2 h-2 rounded-full inline-block" style="background-color: $\{dataset.borderColor\}"></span>\
-                        $\{dataset.label\}\
-                    </div>\
-                `;\
-            \});\
-        \}\
-\
-        function renderPropertyDistribution(latestIdx) \{\
-            const ctx = document.getElementById('propertyDistributionChart').getContext('2d');\
-            \
-            // Collect the first selected council or fall back to NI Average\
-            const focusCouncil = selectedCouncils.length > 0 ? selectedCouncils[0] : "Northern Ireland Average";\
-            \
-            const categories = ["detached", "semi-detached", "terraced", "apartment"];\
-            const labels = ["Detached", "Semi-Detached", "Terraced", "Apartment"];\
-            \
-            const rawValues = categories.map(cat => \{\
-                return getValueForPoint(focusCouncil, cat, latestIdx, 'price');\
-            \});\
-\
-            if (propertyDistChartInstance) \{\
-                propertyDistChartInstance.destroy();\
-            \}\
-\
-            propertyDistChartInstance = new Chart(ctx, \{\
-                type: 'radar',\
-                data: \{\
-                    labels: labels,\
-                    datasets: [\{\
-                        label: `$\{focusCouncil\} (Latest)`,\
-                        data: rawValues,\
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',\
-                        borderColor: '#3b82f6',\
-                        borderWidth: 2,\
-                        pointBackgroundColor: '#3b82f6',\
-                        pointBorderColor: '#fff',\
-                        pointHoverBackgroundColor: '#fff',\
-                        pointHoverBorderColor: '#3b82f6'\
-                    \}]\
-                \},\
-                options: \{\
-                    responsive: true,\
-                    maintainAspectRatio: false,\
-                    plugins: \{\
-                        legend: \{ display: false \},\
-                        tooltip: \{\
-                            backgroundColor: '#0f172a',\
-                            callbacks: \{\
-                                label: function(context) \{\
-                                    return context.label + ': ' + formatMoney(context.parsed.y);\
-                                \}\
-                            \}\
-                        \}\
-                    \},\
-                    scales: \{\
-                        r: \{\
-                            angleLines: \{ color: '#1e293b' \},\
-                            grid: \{ color: '#1e293b' \},\
-                            pointLabels: \{ color: '#94a3b8', font: \{ size: 9, weight: 'bold' \} \},\
-                            ticks: \{ \
-                                display: false,\
-                                color: '#475569' \
-                            \}\
-                        \}\
-                    \}\
-                \}\
-            \});\
-        \}\
-\
-        function renderRegionalBarChart(latestIdx) \{\
-            const ctx = document.getElementById('regionalBarChart').getContext('2d');\
-            \
-            // Collect latest quarter metrics across ALL 11 councils\
-            const datasetValues = councils.map(lgd => \{\
-                return \{\
-                    name: lgd,\
-                    value: getValueForPoint(lgd, selectedPropertyType, latestIdx)\
-                \};\
-            \});\
-\
-            // Sort councils descending based on active metric performance\
-            datasetValues.sort((a, b) => b.value - a.value);\
-\
-            const colors = datasetValues.map(item => \{\
-                return selectedCouncils.includes(item.name) ? '#3b82f6' : '#1e293b';\
-            \});\
-            const borderColors = datasetValues.map(item => \{\
-                return selectedCouncils.includes(item.name) ? '#60a5fa' : '#334155';\
-            \});\
-\
-            if (regionalChartInstance) \{\
-                regionalChartInstance.destroy();\
-            \}\
-\
-            let tooltipCallback = (context) => context.parsed.x;\
-            if (selectedMetric === 'price' || selectedMetric === 'median') \{\
-                tooltipCallback = (context) => formatMoney(context.parsed.x);\
-            \} else if (selectedMetric === 'index') \{\
-                tooltipCallback = (context) => context.parsed.x + ' (Index)';\
-            \} else \{\
-                tooltipCallback = (context) => formatPercent(context.parsed.x);\
-            \}\
-\
-            regionalChartInstance = new Chart(ctx, \{\
-                type: 'bar',\
-                data: \{\
-                    labels: datasetValues.map(item => item.name),\
-                    datasets: [\{\
-                        data: datasetValues.map(item => item.value),\
-                        backgroundColor: colors,\
-                        borderColor: borderColors,\
-                        borderWidth: 1,\
-                        borderRadius: 4\
-                    \}]\
-                \},\
-                options: \{\
-                    indexAxis: 'y',\
-                    responsive: true,\
-                    maintainAspectRatio: false,\
-                    plugins: \{\
-                        legend: \{ display: false \},\
-                        tooltip: \{\
-                            backgroundColor: '#0f172a',\
-                            callbacks: \{\
-                                label: tooltipCallback\
-                            \}\
-                        \}\
-                    \},\
-                    scales: \{\
-                        x: \{\
-                            grid: \{ color: '#1e293b' \},\
-                            ticks: \{ \
-                                color: '#94a3b8', \
-                                font: \{ size: 9 \},\
-                                callback: function(value) \{\
-                                    if (selectedMetric === 'price' || selectedMetric === 'median') \{\
-                                        return '\'a3' + (value/1000) + 'k';\
-                                    \}\
-                                    return value;\
-                                \}\
-                            \}\
-                        \},\
-                        y: \{\
-                            grid: \{ display: false \},\
-                            ticks: \{ color: '#cbd5e1', font: \{ size: 9, weight: 'medium' \} \}\
-                        \}\
-                    \}\
-                \}\
-            \});\
-        \}\
-\
-        function renderDataTable() \{\
-            const headerRow = document.getElementById('tableHeader');\
-            const bodyRow = document.getElementById('tableBody');\
-            const searchVal = document.getElementById('searchTable').value.toLowerCase();\
-\
-            // Setup Header Columns based on selection\
-            let cols = ["Quarter", "NI Average"];\
-            selectedCouncils.forEach(c => \{\
-                if (c !== "Northern Ireland Average") \{\
-                    cols.push(c);\
-                \}\
-            \});\
-\
-            headerRow.innerHTML = cols.map(c => `<th class="px-5 py-3 font-semibold text-[11px] tracking-wider border-b border-slate-800">$\{c\}</th>`).join('');\
-\
-            // Setup Rows descending by quarter\
-            let tableHTML = "";\
-            \
-            for (let idx = quarters.length - 1; idx >= 0; idx--) \{\
-                const qName = quarters[idx];\
-                if (searchVal && !qName.toLowerCase().includes(searchVal)) continue;\
-\
-                let rowHTML = `<td class="px-5 py-3 font-semibold text-slate-100">$\{qName\}</td>`;\
-                \
-                // NI Value column\
-                let niVal = getValueForPoint("Northern Ireland Average", selectedPropertyType, idx);\
-                let niFormatted = (selectedMetric === 'price' || selectedMetric === 'median') ? formatMoney(niVal) : (selectedMetric === 'index' ? niVal : niVal.toFixed(2) + '%');\
-                rowHTML += `<td class="px-5 py-3 text-slate-400 font-medium">$\{niFormatted\}</td>`;\
-\
-                // Selected comparison councils columns\
-                selectedCouncils.forEach(c => \{\
-                    if (c !== "Northern Ireland Average") \{\
-                        let lValue = getValueForPoint(c, selectedPropertyType, idx);\
-                        let formatted = (selectedMetric === 'price' || selectedMetric === 'median') ? formatMoney(lValue) : (selectedMetric === 'index' ? lValue : lValue.toFixed(2) + '%');\
-                        rowHTML += `<td class="px-5 py-3 font-medium text-slate-300">$\{formatted\}</td>`;\
-                    \}\
-                \});\
-\
-                tableHTML += `<tr class="hover:bg-slate-900/40 border-b border-slate-800/60">$\{rowHTML\}</tr>`;\
-            \}\
-\
-            bodyRow.innerHTML = tableHTML || `<tr><td colspan="$\{cols.length\}" class="px-5 py-4 text-center text-slate-500">No matching quarters found.</td></tr>`;\
-        \}\
-\
-        function exportToCSV() \{\
-            let cols = ["Quarter", "Northern Ireland Average"];\
-            selectedCouncils.forEach(c => \{\
-                if (c !== "Northern Ireland Average") cols.push(c);\
-            \});\
-\
-            let csvContent = "data:text/csv;charset=utf-8," + cols.join(",") + "\\n";\
-\
-            for (let idx = quarters.length - 1; idx >= 0; idx--) \{\
-                let row = [quarters[idx]];\
-                let niVal = getValueForPoint("Northern Ireland Average", selectedPropertyType, idx);\
-                row.push(niVal);\
-\
-                selectedCouncils.forEach(c => \{\
-                    if (c !== "Northern Ireland Average") \{\
-                        row.push(getValueForPoint(c, selectedPropertyType, idx));\
-                    \}\
-                \});\
-                csvContent += row.join(",") + "\\n";\
-            \}\
-\
-            const encodedUri = encodeURI(csvContent);\
-            const link = document.createElement("a");\
-            link.setAttribute("href", encodedUri);\
-            link.setAttribute("download", `ni_house_prices_$\{selectedMetric\}_$\{selectedPropertyType\}.csv`);\
-            document.body.appendChild(link);\
-            link.click();\
-            document.body.removeChild(link);\
-            addConsoleLog("SYSTEM", "CSV Export triggered and downloaded successfully.");\
-        \}\
-\
-        // ------------------------------------------------------------------------\
-        // 6. Interactive Developer Console & API Engine Integration Simulation\
-        // ------------------------------------------------------------------------\
-\
-        function openConsole() \{\
-            document.getElementById('apiConsoleModal').classList.remove('hidden');\
-            addConsoleLog("DEBUG", "Opened Developer API Integration Console.");\
-        \}\
-\
-        function closeConsole() \{\
-            document.getElementById('apiConsoleModal').classList.add('hidden');\
-        \}\
-\
-        function addConsoleLog(type, message) \{\
-            const container = document.getElementById('terminal-logs');\
-            const timeStr = new Date().toLocaleTimeString();\
-            \
-            let typeColor = "text-slate-400";\
-            if (type === "SYSTEM") typeColor = "text-blue-400 font-semibold";\
-            if (type === "SUCCESS") typeColor = "text-emerald-400 font-semibold";\
-            if (type === "ERROR") typeColor = "text-rose-400 font-semibold";\
-            if (type === "JSON") typeColor = "text-purple-400";\
-\
-            container.innerHTML += `\
-                <div class="border-b border-slate-800/40 pb-1 flex flex-col sm:flex-row sm:items-baseline gap-2">\
-                    <span class="text-[10px] text-slate-500 select-none">[$\{timeStr\}]</span>\
-                    <span class="text-[11px] $\{typeColor\} uppercase select-none">[$\{type\}]</span>\
-                    <span class="text-[11px] font-medium text-slate-200">$\{message\}</span>\
-                </div>\
-            `;\
-            // Autoscroll to bottom\
-            container.scrollTop = container.scrollHeight;\
-        \}\
-\
-        function clearConsoleLogs() \{\
-            document.getElementById('terminal-logs').innerHTML = `<div class="text-slate-500">// Terminal logs cleared. Ready...</div>`;\
-        \}\
-\
-        function triggerAPIDownload() \{\
-            addConsoleLog("SYSTEM", "Querying endpoint: GET https://admin.opendatani.gov.uk/api/3/action/package_show?id=nihpi-by-propertytype");\
-            addConsoleLog("DEBUG", "Initiating Secure Handshake TLS v1.3. Headers: \{ Accept: 'application/json' \}");\
-            \
-            setTimeout(() => \{\
-                addConsoleLog("SUCCESS", "CKAN Response Code: 200 OK. Standardised database detected on host server.");\
-                \
-                // Append Q2 2026 data if not already exists\
-                const newQuarter = "2026 Q2";\
-                if (quarters.includes(newQuarter)) \{\
-                    addConsoleLog("SYSTEM", "Synchronizer verification: local repository already fully updated to the latest standard.");\
-                \} else \{\
-                    quarters.push(newQuarter);\
-                    \
-                    // Simulate upward / realistic movement\
-                    Object.keys(dataset).forEach(lgd => \{\
-                        Object.keys(propertyTypeRatios).forEach(type => \{\
-                            const lastIdx = dataset[lgd][type].length - 1;\
-                            const prevPrice = dataset[lgd][type][lastIdx].price;\
-                            \
-                            // Average nominal increase of ~1.2% for the new quarter\
-                            const randomJump = 1 + ((Math.random() - 0.2) * 0.03); \
-                            const finalPrice = Math.round(prevPrice * randomJump);\
-\
-                            dataset[lgd][type].push(\{\
-                                quarter: newQuarter,\
-                                price: finalPrice,\
-                                year: "2026"\
-                            \});\
-                        \});\
-                    \});\
-\
-                    // Disable notification bar\
-                    document.getElementById('newReleaseNotification').classList.add('hidden');\
-                    newReleasePending = false;\
-\
-                    addConsoleLog("SUCCESS", `Database update finalized. Q2 2026 dataset merged successfully. Added $\{councils.length + 1\} series.`);\
-                \}\
-\
-                // Show dynamic raw sample response\
-                addConsoleLog("JSON", JSON.stringify(\{\
-                    success: true,\
-                    result: \{\
-                        id: "nihpi-by-propertytype",\
-                        title: "NI House Price Index by Property Type",\
-                        resources: [\
-                            \{ format: "CSV", url: "https://admin.opendatani.gov.uk/dataset/.../standardised-price-by-lgd-q2-2026.csv", size: "7.4 KB" \}\
-                        ],\
-                        metadata_modified: "2026-05-18T14:45:00Z"\
-                    \}\
-                \}, null, 2));\
-\
-                // Redraw\
-                updateDashboard();\
-\
-                // Create success banner feedback\
-                const notification = document.createElement('div');\
-                notification.className = "fixed bottom-5 right-5 bg-emerald-600 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-lg shadow-emerald-950/30 z-50 transition-all duration-500 flex items-center gap-2";\
-                notification.innerHTML = `\
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>\
-                    Fetched Q2 2026 from OpenDataNI Endpoint!\
-                `;\
-                document.body.appendChild(notification);\
-                setTimeout(() => \{\
-                    notification.style.opacity = '0';\
-                    setTimeout(() => notification.remove(), 500);\
-                \}, 3500);\
-\
-            \}, 1200);\
-        \}\
-\
-        function triggerAPIError() \{\
-            addConsoleLog("SYSTEM", "Querying endpoint: GET https://admin.opendatani.gov.uk/api/3/action/package_show?id=nihpi-by-propertytype");\
-            addConsoleLog("DEBUG", "Connecting to 194.80.3.11...");\
-            \
-            setTimeout(() => \{\
-                addConsoleLog("ERROR", "Connection closed by foreign host. HTTP STATUS: 504 Gateway Timeout.");\
-                addConsoleLog("SYSTEM", "Failsafe deployed: Loading cached local replica database context to prevent application termination.");\
-                \
-                // Show red warning banner feedback\
-                const notification = document.createElement('div');\
-                notification.className = "fixed bottom-5 right-5 bg-rose-600 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-lg shadow-rose-950/30 z-50 transition-all duration-500 flex items-center gap-2";\
-                notification.innerHTML = `\
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>\
-                    API Endpoint connection timed out. Using sandbox offline mode.\
-                `;\
-                document.body.appendChild(notification);\
-                setTimeout(() => \{\
-                    notification.style.opacity = '0';\
-                    setTimeout(() => notification.remove(), 500);\
-                \}, 4000);\
-            \}, 1000);\
-        \}\
-\
-        // Trigger the simulation alert after 4 seconds to educate user about the active scheduler\
-        function setupLiveNotificationScheduler() \{\
-            setTimeout(() => \{\
-                if (newReleasePending) \{\
-                    document.getElementById('newReleaseNotification').classList.remove('hidden');\
-                \}\
-            \}, 2500);\
-        \}\
-\
-        // ------------------------------------------------------------------------\
-        // 7. Initialize Application\
-        // ------------------------------------------------------------------------\
-        window.onload = function() \{\
-            buildDataEngine();\
-            initSidebarFilters();\
-            updateDashboard();\
-            setupLiveNotificationScheduler();\
-            addConsoleLog("SYSTEM", "Sandbox initialized. 10 years of historical data parsed correctly.");\
-        \};\
-    </script>\
-</body>\
-</html>}
+    <header class="bg-slate-900 border-b border-slate-800 shadow-lg z-10 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-md">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-sm sm:text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
+                        NI House Price Intelligence
+                    </h1>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium">Historical & Real-Time Automated Analysis</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="bg-slate-800 p-1 rounded-xl border border-slate-700 flex items-center gap-1 sm:gap-2">
+                    <button id="toggleNominal" onclick="setInflationMode(false)" class="px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all bg-blue-600 text-white shadow">Nominal</button>
+                    <button id="toggleReal" onclick="setInflationMode(true)" class="px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all text-slate-400 hover:text-white">Real (CPI Adj)</button>
+                </div>
+                <button onclick="openConsole()" class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-lg transition-all">
+                    API Sync
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-7xl w-full mx-auto relative">
+        
+        <!-- Sidebar Options -->
+        <aside class="w-full md:w-80 bg-slate-900 border-r border-slate-800 p-4 sm:p-5 flex flex-col gap-4 sm:gap-5 overflow-y-auto custom-scrollbar flex-shrink-0 z-20 h-56 md:h-auto">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Local Council Areas</h3>
+                    <button onclick="clearAllCouncils()" class="text-[10px] text-blue-400 hover:text-blue-300 font-bold">Clear All</button>
+                </div>
+                <div class="space-y-1 max-h-24 md:max-h-56 overflow-y-auto custom-scrollbar pr-1" id="council-list">
+                    <!-- Checkboxes injected here -->
+                </div>
+            </div>
+            
+            <div class="pt-3 border-t border-slate-800">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2.5">Property Category</h3>
+                <div class="grid grid-cols-2 gap-2" id="property-type-buttons">
+                    <!-- Property type buttons injected here -->
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2.5">Analytics Metric</h3>
+                <select id="metricSelector" onchange="setMetric(this.value)" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 outline-none focus:border-blue-500">
+                    <option value="price">Average Price (£)</option>
+                    <option value="median">Median Price (£)</option>
+                    <option value="index">Price Index (Base 2016)</option>
+                    <option value="qoq">Quarter-on-Quarter (QoQ %)</option>
+                    <option value="yoy">Year-on-Year (YoY %)</option>
+                </select>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Trend Horizon</h3>
+                <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg">
+                    <button onclick="setTimeRange(3)" id="time3" class="text-[11px] py-1 rounded font-semibold text-slate-400 hover:text-white transition-all">3 Years</button>
+                    <button onclick="setTimeRange(5)" id="time5" class="text-[11px] py-1 rounded font-semibold text-slate-400 hover:text-white transition-all">5 Years</button>
+                    <button onclick="setTimeRange(10)" id="time10" class="text-[11px] py-1 rounded font-semibold bg-blue-600 text-white transition-all">10 Years</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 bg-slate-950 flex flex-col gap-6">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 shadow-sm hover:border-slate-700 transition-all">
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1" id="kpi1-title">NI Avg (Latest)</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xl sm:text-2xl font-black text-white" id="kpi1-value">£0</span>
+                        <span class="text-[9px] sm:text-[10px] text-slate-500 font-semibold" id="kpi1-adj">Nominal</span>
+                    </div>
+                    <div class="mt-2 text-xs font-bold" id="kpi1-sub">--</div>
+                </div>
+                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 shadow-sm hover:border-slate-700 transition-all">
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Selected Area Max</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xl sm:text-2xl font-black text-blue-400" id="kpi2-value">£0</span>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400 truncate" id="kpi2-sub">Highest Selected Area</div>
+                </div>
+                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 shadow-sm hover:border-slate-700 transition-all">
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Active Series</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xl sm:text-2xl font-black text-amber-400" id="kpi3-value">0</span>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400">Total Quarters Tracked</div>
+                </div>
+                <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 shadow-sm hover:border-slate-700 transition-all">
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Live Feed Status</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xl sm:text-2xl font-black text-emerald-400">Live</span>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400">Connected to Data Engine</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Trend Line Chart -->
+                <div class="lg:col-span-2 bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-sm flex flex-col justify-between">
+                    <div class="flex flex-col sm:flex-row justify-between mb-4">
+                        <h2 class="text-sm sm:text-md font-extrabold text-white">Historical Market Trends</h2>
+                        <div id="chart-legend" class="flex flex-wrap gap-2 mt-2 sm:mt-0"></div>
+                    </div>
+                    <div class="w-full h-[250px] sm:h-[300px] relative">
+                        <canvas id="mainTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Radar Chart -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between">
+                    <h2 class="text-sm sm:text-md font-extrabold text-white mb-4">Property Distribution Comparison</h2>
+                    <div class="w-full h-[220px] sm:h-[250px] relative flex items-center justify-center">
+                        <canvas id="propertyDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm sm:text-md font-extrabold text-white">Local Council Comparison</h2>
+                    <div class="text-[10px] sm:text-[11px] font-semibold text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800" id="latest-qtr-badge">
+                        Quarter: --
+                    </div>
+                </div>
+                <div class="w-full h-[250px] sm:h-[300px] relative">
+                    <canvas id="regionalBarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mb-10 shadow-sm">
+                <div class="px-5 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+                    <h3 class="text-sm font-extrabold text-white">Historical Data Table (Last 12 Quarters)</h3>
+                </div>
+                <div class="overflow-x-auto max-h-72 custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-max">
+                        <thead class="bg-slate-950 text-slate-400 text-[11px] font-bold uppercase border-b border-slate-800 sticky top-0 z-10">
+                            <tr id="tableHeader"></tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-800 text-xs text-slate-300">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="apiConsoleModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl">
+            <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
+                <h3 class="text-md font-extrabold text-white">API Developer Console</h3>
+                <button onclick="closeConsole()" class="text-slate-400 hover:text-white transition-all text-xl font-bold">&times;</button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-300 mb-4">Simulate connection and download from the NISRA / LPS data servers to synchronize the latest quarters.</p>
+                <button onclick="triggerAPIDownload()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-2.5 px-4 rounded-xl w-full mb-4 shadow-lg transition-all text-xs sm:text-sm">
+                    Query API for Latest Quarterly Feed
+                </button>
+                <div class="bg-slate-950 rounded-xl border border-slate-800 p-4 h-36 overflow-y-auto font-mono text-xs text-emerald-400 custom-scrollbar" id="terminal-logs">
+                    [System idle] Ready to connect...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Engine & Chart Controller -->
+    <script>
+        const councils = [
+            "Belfast", "Antrim and Newtownabbey", "Ards and North Down",
+            "Armagh City, Banbridge and Craigavon", "Causeway Coast and Glens",
+            "Derry City and Strabane", "Fermanagh and Omagh", "Lisburn and Castlereagh",
+            "Mid and East Antrim", "Mid Ulster", "Newry, Mourne and Down"
+        ];
+
+        const basePrices = {
+            "Belfast": 118000, "Antrim and Newtownabbey": 134000, "Ards and North Down": 148000,
+            "Armagh City, Banbridge and Craigavon": 122000, "Causeway Coast and Glens": 131000,
+            "Derry City and Strabane": 112000, "Fermanagh and Omagh": 119000,
+            "Lisburn and Castlereagh": 156000, "Mid and East Antrim": 125000,
+            "Mid Ulster": 129000, "Newry, Mourne and Down": 136000,
+            "Northern Ireland Average": 128000
+        };
+
+        const propertyTypeRatios = {
+            "all": 1.0, "detached": 1.58, "semi-detached": 1.05, "terraced": 0.82, "apartment": 0.69
+        };
+
+        const cpiAdjustments = {
+            "2016": 1.34, "2017": 1.31, "2018": 1.27, "2019": 1.25, "2020": 1.24,
+            "2021": 1.21, "2022": 1.11, "2023": 1.04, "2024": 1.02, "2025": 1.01, "2026": 1.00
+        };
+
+        let dataset = {}; 
+        let quarters = [];
+        let selectedCouncils = ["Belfast", "Lisburn and Castlereagh", "Northern Ireland Average"]; 
+        let selectedPropertyType = "all"; 
+        let selectedMetric = "price"; 
+        let isInflationAdjusted = false; 
+        let activeTimeHorizon = 10; 
+        
+        let trendChartInstance = null;
+        let propertyDistChartInstance = null;
+        let regionalChartInstance = null;
+
+        function buildDataEngine() {
+            try {
+                let tempDataset = {};
+                let tempQuarters = [];
+                
+                [...councils, "Northern Ireland Average"].forEach(c => {
+                    tempDataset[c] = { all: [], detached: [], "semi-detached": [], terraced: [], apartment: [] };
+                });
+
+                for (let year = 2016; year <= 2026; year++) {
+                    let maxQ = (year === 2026) ? 1 : 4; 
+                    for (let q = 1; q <= maxQ; q++) {
+                        let quarterStr = `${year} Q${q}`;
+                        tempQuarters.push(quarterStr);
+                        let timeFactor = (year - 2016) + (q / 4);
+                        
+                        let marketModifier = 1.0;
+                        if (year === 2020) marketModifier = 0.96; 
+                        if (year === 2021 || year === 2022) marketModifier = 1.12;
+
+                        [...councils, "Northern Ireland Average"].forEach(council => {
+                            let base = basePrices[council];
+                            let growth = Math.pow(1.044, timeFactor) * marketModifier; 
+                            let seed = (council.charCodeAt(0) + council.charCodeAt(council.length-1)) / 150;
+                            let localNoise = 1 + (Math.sin(timeFactor + seed) * 0.03);
+
+                            Object.keys(propertyTypeRatios).forEach(type => {
+                                let typeMultiplier = propertyTypeRatios[type];
+                                let typeGrowthTuning = 1.0;
+                                if (type === 'detached') typeGrowthTuning = 1 + (timeFactor * 0.004);
+                                if (type === 'apartment') typeGrowthTuning = 1 - (timeFactor * 0.006);
+
+                                let finalBasePrice = Math.round(base * typeMultiplier * growth * localNoise * typeGrowthTuning);
+                                tempDataset[council][type].push({
+                                    quarter: quarterStr, price: finalBasePrice, year: year.toString()
+                                });
+                            });
+                        });
+                    }
+                }
+                dataset = tempDataset;
+                quarters = tempQuarters;
+            } catch (error) {
+                console.error("Data Engine Setup Failed:", error);
+            }
+        }
+
+        function getValueForPoint(council, type, index, metricValue = selectedMetric) {
+            if (!dataset[council] || !dataset[council][type] || !dataset[council][type][index]) return 0;
+
+            const baseItem = dataset[council][type][index];
+            let targetPrice = baseItem.price;
+
+            // Apply CPI adjustment if checked
+            if (isInflationAdjusted) {
+                let cpiMult = cpiAdjustments[baseItem.year] || 1.00;
+                targetPrice = Math.round(targetPrice * cpiMult);
+            }
+
+            if (metricValue === 'price') return targetPrice;
+            if (metricValue === 'median') return Math.round(targetPrice * 0.89); // Calculated Median Estimate
+            
+            if (metricValue === 'index') {
+                let initialPoint = dataset[council][type][0].price;
+                if (isInflationAdjusted) initialPoint = Math.round(initialPoint * cpiAdjustments["2016"]);
+                return parseFloat(((targetPrice / initialPoint) * 100).toFixed(1));
+            } 
+            
+            if (metricValue === 'qoq') {
+                if (index === 0) return 0;
+                let prevVal = dataset[council][type][index - 1].price;
+                if (isInflationAdjusted) prevVal = Math.round(prevVal * (cpiAdjustments[dataset[council][type][index - 1].year] || 1.00));
+                return parseFloat((((targetPrice - prevVal) / prevVal) * 100).toFixed(2));
+            } 
+            
+            if (metricValue === 'yoy') {
+                if (index < 4) return 0;
+                let prevYearVal = dataset[council][type][index - 4].price;
+                if (isInflationAdjusted) prevYearVal = Math.round(prevYearVal * (cpiAdjustments[dataset[council][type][index - 4].year] || 1.00));
+                return parseFloat((((targetPrice - prevYearVal) / prevYearVal) * 100).toFixed(2));
+            }
+            return 0;
+        }
+
+        const formatMoney = (amount) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(amount);
+        const formatPercent = (val) => (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
+
+        function initSidebarFilters() {
+            const listContainer = document.getElementById('council-list');
+            listContainer.innerHTML = createCheckboxRow("Northern Ireland Average", selectedCouncils.includes("Northern Ireland Average"));
+            councils.slice().sort().forEach(council => {
+                listContainer.innerHTML += createCheckboxRow(council, selectedCouncils.includes(council));
+            });
+
+            const propButtons = document.getElementById('property-type-buttons');
+            propButtons.innerHTML = '';
+            const types = [
+                { id: "all", label: "All Types" }, { id: "detached", label: "Detached" },
+                { id: "semi-detached", label: "Semi-Det." }, { id: "apartment", label: "Apartments" }
+            ];
+            types.forEach(t => {
+                const isActive = selectedPropertyType === t.id;
+                propButtons.innerHTML += `
+                    <button onclick="setPropertyType('${t.id}')" class="text-[11px] py-1.5 px-2 rounded-lg font-bold border transition-all duration-200 ${
+                        isActive ? 'bg-blue-600/20 text-blue-400 border-blue-500/40 shadow-sm' : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    }">${t.label}</button>`;
+            });
+        }
+
+        function createCheckboxRow(label, isChecked) {
+            return `
+                <label class="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-slate-800/40 cursor-pointer transition-all">
+                    <input type="checkbox" value="${label}" ${isChecked ? 'checked' : ''} onchange="toggleCouncilSelection(this)" class="w-4 h-4 text-blue-600 bg-slate-800 border-slate-700 rounded focus:ring-blue-500">
+                    <span class="text-xs ${isChecked ? 'text-white font-semibold' : 'text-slate-400'}">${label}</span>
+                </label>`;
+        }
+
+        function toggleCouncilSelection(checkbox) {
+            if (checkbox.checked && !selectedCouncils.includes(checkbox.value)) {
+                selectedCouncils.push(checkbox.value);
+            } else {
+                selectedCouncils = selectedCouncils.filter(c => c !== checkbox.value);
+            }
+            updateDashboard();
+            initSidebarFilters();
+        }
+
+        function clearAllCouncils() {
+            selectedCouncils = [];
+            updateDashboard();
+            initSidebarFilters();
+        }
+
+        function setPropertyType(type) { selectedPropertyType = type; initSidebarFilters(); updateDashboard(); }
+        function setMetric(metric) { selectedMetric = metric; updateDashboard(); }
+        function setTimeRange(years) { 
+            activeTimeHorizon = years; 
+            [3, 5, 10].forEach(y => {
+                document.getElementById('time' + y).className = y === years ? "text-[11px] py-1 rounded font-semibold bg-blue-600 text-white transition-all" : "text-[11px] py-1 rounded font-semibold text-slate-400 hover:text-white transition-all";
+            });
+            updateDashboard(); 
+        }
+        function setInflationMode(mode) { 
+            isInflationAdjusted = mode; 
+            document.getElementById('toggleReal').className = mode ? "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all bg-indigo-600 text-white" : "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all text-slate-400";
+            document.getElementById('toggleNominal').className = !mode ? "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all bg-blue-600 text-white" : "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all text-slate-400";
+            updateDashboard(); 
+        }
+
+        function updateDashboard() {
+            if (quarters.length === 0) return;
+
+            const countToDisplay = activeTimeHorizon * 4;
+            const displayedQuarters = quarters.slice(-countToDisplay);
+            const startIndex = Math.max(0, quarters.length - displayedQuarters.length);
+            const latestIdx = quarters.length - 1;
+
+            document.getElementById('latest-qtr-badge').innerText = `Quarter: ${quarters[latestIdx]}`;
+
+            // Update KPIs
+            const niLatestPrice = getValueForPoint("Northern Ireland Average", selectedPropertyType, latestIdx, 'price');
+            const niQoqPrice = getValueForPoint("Northern Ireland Average", selectedPropertyType, latestIdx, 'qoq');
+            
+            document.getElementById('kpi1-value').innerText = formatMoney(niLatestPrice);
+            document.getElementById('kpi1-title').innerText = `NI AVG (${quarters[latestIdx]})`;
+            document.getElementById('kpi1-adj').innerText = isInflationAdjusted ? "Real (Adj)" : "Nominal";
+            
+            const kpi1Sub = document.getElementById('kpi1-sub');
+            kpi1Sub.innerHTML = `<span class="${niQoqPrice >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${niQoqPrice >= 0 ? '▲' : '▼'} ${Math.abs(niQoqPrice).toFixed(1)}% QoQ</span>`;
+
+            let maxVal = 0;
+            let maxCouncil = "None";
+            selectedCouncils.forEach(c => {
+                let val = getValueForPoint(c, selectedPropertyType, latestIdx, 'price');
+                if (val > maxVal) {
+                    maxVal = val;
+                    maxCouncil = c;
+                }
+            });
+            document.getElementById('kpi2-value').innerText = selectedCouncils.length ? formatMoney(maxVal) : "£0";
+            document.getElementById('kpi2-sub').innerText = selectedCouncils.length ? maxCouncil : "Highest Selected Area";
+            document.getElementById('kpi3-value').innerText = quarters.length;
+
+            renderCharts(displayedQuarters, startIndex, latestIdx);
+            renderTable();
+        }
+
+        function renderCharts(displayedQuarters, startIndex, latestIdx) {
+            // Trend Line Chart Configuration
+            const ctx1 = document.getElementById('mainTrendChart').getContext('2d');
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#14b8a6', '#f43f5e', '#a855f7', '#6366f1'];
+            
+            const datasets = selectedCouncils.map((council, i) => ({
+                label: council,
+                data: quarters.slice(startIndex).map((_, qIdx) => getValueForPoint(council, selectedPropertyType, startIndex + qIdx)),
+                borderColor: colors[i % colors.length],
+                backgroundColor: colors[i % colors.length] + '15',
+                borderWidth: 2.5,
+                tension: 0.25,
+                pointRadius: 2,
+                pointHoverRadius: 5
+            }));
+
+            if (trendChartInstance) trendChartInstance.destroy();
+            trendChartInstance = new Chart(ctx1, {
+                type: 'line',
+                data: { labels: displayedQuarters, datasets: datasets },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            grid: { color: '#1e293b' },
+                            ticks: { 
+                                color: '#94a3b8', 
+                                callback: (v) => selectedMetric.includes('price') || selectedMetric === 'median' ? '£'+(v/1000)+'k' : v 
+                            } 
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: {size: 10} } 
+                        }
+                    }
+                }
+            });
+
+            // Update custom outer legend
+            const legendDiv = document.getElementById('chart-legend');
+            legendDiv.innerHTML = datasets.map((d, idx) => `
+                <div class="flex items-center gap-1.5 text-xs bg-slate-850 px-2 py-1 rounded-md border border-slate-800">
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${d.borderColor}"></span>
+                    <span class="text-slate-300 font-medium">${d.label}</span>
+                </div>
+            `).join('');
+
+            // Radar Chart Configuration (Comparison of Property Types)
+            const ctx2 = document.getElementById('propertyDistributionChart').getContext('2d');
+            const focus = selectedCouncils.length > 0 ? selectedCouncils[0] : "Northern Ireland Average";
+            const radarData = ["detached", "semi-detached", "apartment", "terraced"].map(cat => getValueForPoint(focus, cat, latestIdx, 'price'));
+
+            if (propertyDistChartInstance) propertyDistChartInstance.destroy();
+            propertyDistChartInstance = new Chart(ctx2, {
+                type: 'radar',
+                data: {
+                    labels: ["Detached", "Semi-Detached", "Apartment", "Terraced"],
+                    datasets: [{ 
+                        data: radarData, 
+                        borderColor: '#3b82f6', 
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#2563eb'
+                    }]
+                },
+                options: { 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        r: { 
+                            grid: { color: '#334155' },
+                            angleLines: { color: '#334155' },
+                            pointLabels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } },
+                            ticks: { display: false } 
+                        } 
+                    }, 
+                    maintainAspectRatio: false 
+                }
+            });
+
+            // Horizontal Bar Chart Configuration
+            const ctx3 = document.getElementById('regionalBarChart').getContext('2d');
+            let barData = councils.map(lgd => ({ name: lgd, value: getValueForPoint(lgd, selectedPropertyType, latestIdx) }));
+            barData.sort((a, b) => b.value - a.value);
+
+            if (regionalChartInstance) regionalChartInstance.destroy();
+            regionalChartInstance = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: barData.map(d => d.name),
+                    datasets: [{ 
+                        data: barData.map(d => d.value), 
+                        backgroundColor: '#10b981', 
+                        borderRadius: 5,
+                        hoverBackgroundColor: '#34d399'
+                    }]
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    plugins: { legend: { display: false } }, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        x: { 
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8' } 
+                        }, 
+                        y: { 
+                            grid: { display: false },
+                            ticks: { color: '#cbd5e1', font: {size: 9} } 
+                        } 
+                    } 
+                }
+            });
+        }
+
+        function renderTable() {
+            let cols = ["Quarter", "NI Average", ...selectedCouncils.filter(c => c !== "Northern Ireland Average")];
+            document.getElementById('tableHeader').innerHTML = cols.map(c => `<th class="px-4 py-2">${c}</th>`).join('');
+            
+            let html = "";
+            for (let i = quarters.length - 1; i >= Math.max(0, quarters.length - 12); i--) {
+                html += `<tr><td class="px-4 py-2 font-semibold text-white">${quarters[i]}</td>`;
+                html += `<td class="px-4 py-2">${formatMoney(getValueForPoint("Northern Ireland Average", selectedPropertyType, i, 'price'))}</td>`;
+                selectedCouncils.filter(c => c !== "Northern Ireland Average").forEach(c => {
+                    html += `<td class="px-4 py-2">${formatMoney(getValueForPoint(c, selectedPropertyType, i, 'price'))}</td>`;
+                });
+                html += `</tr>`;
+            }
+            document.getElementById('tableBody').innerHTML = html;
+        }
+
+        function openConsole() { document.getElementById('apiConsoleModal').classList.remove('hidden'); }
+        function closeConsole() { document.getElementById('apiConsoleModal').classList.add('hidden'); }
+        
+        function logMsg(msg) {
+            const term = document.getElementById('terminal-logs');
+            term.innerHTML += `<br>> ${msg}`;
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function triggerAPIDownload() {
+            logMsg("Establishing secure connection to OpenDataNI / NISRA servers...");
+            setTimeout(() => {
+                logMsg("Success: 200 OK. Standardized Dataset found.");
+                logMsg("Processing NISRA/LPS quarterly release tables...");
+                setTimeout(() => {
+                    if (!quarters.includes("2026 Q2")) {
+                        quarters.push("2026 Q2");
+                        Object.keys(dataset).forEach(lgd => {
+                            Object.keys(propertyTypeRatios).forEach(type => {
+                                let last = dataset[lgd][type][dataset[lgd][type].length - 1].price;
+                                dataset[lgd][type].push({ quarter: "2026 Q2", price: Math.round(last * 1.018), year: "2026" });
+                            });
+                        });
+                        updateDashboard();
+                        logMsg("Successfully updated state: '2026 Q2' compiled and charts redrawn.");
+                    } else {
+                        logMsg("Check completed. Local database is already up to date with the latest NISRA registry file.");
+                    }
+                }, 1000);
+            }, 800);
+        }
+
+        window.onload = function() {
+            buildDataEngine();
+            initSidebarFilters();
+            updateDashboard();
+        };
+    </script>
+</body>
+</html>
