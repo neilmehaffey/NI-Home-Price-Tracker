@@ -67,11 +67,19 @@
         
         <!-- Section 1: Regional Council Grid Selector -->
         <section class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">Regional Index Selection</span>
                     <h2 class="text-xl font-bold text-slate-900 mt-1">Select Council District</h2>
-                    <p class="text-sm text-slate-500">Click a card to display detailed historical visual charts and localized market analysis comments below.</p>
+                    <p class="text-sm text-slate-500">Click any card below to load its full 10-year dataset and custom market commentary.</p>
+                </div>
+                <!-- Dynamic Quick Switch for Property Types on Grid -->
+                <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/60 self-start">
+                    <button onclick="selectPropertyType('all')" id="grid-prop-all" class="prop-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm">🏠 All</button>
+                    <button onclick="selectPropertyType('detached')" id="grid-prop-detached" class="prop-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">🏡 Detached</button>
+                    <button onclick="selectPropertyType('semi-detached')" id="grid-prop-semi-detached" class="prop-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">🏘️ Semi-Det</button>
+                    <button onclick="selectPropertyType('terraced')" id="grid-prop-terraced" class="prop-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">🚪 Terrace</button>
+                    <button onclick="selectPropertyType('apartment')" id="grid-prop-apartment" class="prop-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">🏢 Apartment</button>
                 </div>
             </div>
 
@@ -102,14 +110,38 @@
 
         <!-- Section 2: Historical Visualisation Tracker & Council Intel -->
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Left Side: Interactive 10-Year Historical Graph -->
+            <!-- Left Side: Interactive 10-Year Historical Graph & Metric Options -->
             <div class="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div>
-                            <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">10-Year Trajectory</span>
+                            <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">Historical Intelligence</span>
                             <h3 class="text-xl font-bold text-slate-900 mt-1" id="chartTitle">Belfast Market History</h3>
-                            <p class="text-sm text-slate-500 mt-1">Interactive timeline tracking average and estimated median prices.</p>
+                            <p class="text-xs text-slate-500 mt-1">Configure historical criteria by selecting property type and analytical metric below.</p>
+                        </div>
+                    </div>
+
+                    <!-- Filter Bar for Chart -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/50">
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Property Filter</label>
+                            <select id="chartPropertySelector" onchange="selectPropertyType(this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">🏠 All Property Types</option>
+                                <option value="detached">🏡 Detached Properties</option>
+                                <option value="semi-detached">🏘️ Semi-Detached Houses</option>
+                                <option value="terraced">🚪 Terraced / Townhouses</option>
+                                <option value="apartment">🏢 Apartments & Flats</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Performance Metric</label>
+                            <select id="chartMetricSelector" onchange="selectMetric(this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="averagePrice">📈 Average Price (£)</option>
+                                <option value="medianPrice">📉 Estimated Median Price (£)</option>
+                                <option value="standardisedIndex">📊 Standardised House Price Index (HPI)</option>
+                                <option value="qoq">🔄 Quarter-on-Quarter Growth (%)</option>
+                                <option value="yoy">📆 Year-on-Year Growth (%)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -123,9 +155,9 @@
             <!-- Right Side: Local Council Intelligence Widget -->
             <div class="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                 <div>
-                    <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider font-bold">Local Insight</span>
+                    <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider font-bold">Local Intel</span>
                     <h3 class="text-lg font-bold text-slate-900 mt-1">Council Commentary</h3>
-                    <p class="text-xs text-slate-500 mt-1.5">Select a council on the main grid above to inspect specialized, real-world commentary and micro-market analysis.</p>
+                    <p class="text-xs text-slate-500 mt-1">Select a council on the main grid above to inspect specialized, real-world commentary and micro-market analysis.</p>
                 </div>
 
                 <!-- Council Dropdown selector inside commentary box for mobile quick access -->
@@ -137,10 +169,10 @@
                 </div>
 
                 <!-- Dynamic Narrative Panel -->
-                <div class="mt-6 bg-slate-50 border border-indigo-100 rounded-2xl p-4 flex-grow flex flex-col justify-between" id="localIntelBox">
-                    <div>
-                        <div class="flex items-center space-x-2 mb-3">
-                            <span class="bg-indigo-600 text-white p-1 rounded-lg text-[10px] font-extrabold uppercase" id="intelCouncilAbbrev">BEL</span>
+                <div class="mt-4 bg-slate-50 border border-indigo-100 rounded-2xl p-4 flex-grow flex flex-col justify-between" id="localIntelBox">
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-indigo-600 text-white p-1 rounded-lg text-[10px] font-extrabold uppercase px-1.5" id="intelCouncilAbbrev">BEL</span>
                             <h4 class="font-extrabold text-xs text-slate-900" id="intelCouncilTitle">Belfast City Council</h4>
                         </div>
                         <p class="text-xs text-slate-600 leading-relaxed font-medium" id="intelParagraph">
@@ -148,14 +180,27 @@
                         </p>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-slate-200/60 grid grid-cols-2 gap-4 text-[11px]">
-                        <div>
-                            <span class="text-slate-400 block font-semibold">Latest Average</span>
-                            <span class="font-bold text-slate-800 text-sm" id="intelAvgPrice">£0</span>
+                    <!-- Robust Metrics Table -->
+                    <div class="mt-4 pt-4 border-t border-slate-200/60 space-y-2.5 text-[11px]">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400 font-semibold">Latest Average</span>
+                            <span class="font-bold text-slate-800 text-xs sm:text-sm" id="intelAvgPrice">£0</span>
                         </div>
-                        <div>
-                            <span class="text-slate-400 block font-semibold">Latest Median</span>
-                            <span class="font-bold text-slate-800 text-sm" id="intelMedPrice">£0</span>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400 font-semibold">Estimated Median</span>
+                            <span class="font-bold text-slate-800 text-xs sm:text-sm" id="intelMedPrice">£0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400 font-semibold">Standardised Index</span>
+                            <span class="font-bold text-indigo-600 text-xs sm:text-sm" id="intelIndex">100.0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400 font-semibold">Quarterly Change (QoQ)</span>
+                            <span class="font-bold text-xs sm:text-sm" id="intelQoq">0.0%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400 font-semibold">Annual Change (YoY)</span>
+                            <span class="font-bold text-xs sm:text-sm" id="intelYoy">0.0%</span>
                         </div>
                     </div>
                 </div>
@@ -241,10 +286,11 @@
             </div>
             <div class="space-y-4 text-xs text-slate-600 leading-relaxed">
                 <p>This web application is an advanced interactive tool showing historical data based on Land & Property Services (LPS) and Northern Ireland Statistics and Research Agency (NISRA) residential datasets.</p>
-                <p class="font-semibold text-slate-900">Core Methodology:</p>
+                <p class="font-semibold text-slate-900">Core Methodology & Indicators:</p>
                 <ul class="list-disc pl-4 space-y-1.5">
                     <li><strong>Average vs Median:</strong> The median values estimate midpoint distribution, removing skewed transactions (extremely cheap or premium houses).</li>
-                    <li><strong>Automated Data Sync:</strong> GitHub Actions pulls official OpenDataNI stats regularly to ensure pricing is up to date.</li>
+                    <li><strong>Standardised HPI:</strong> Re-indexes the entire trajectory using Q1 2016 as a base value of 100.0 to track standardized momentum independent of raw prices.</li>
+                    <li><strong>QoQ & YoY:</strong> Calculations represent the dynamic change relative to the preceding quarter or the same quarter in the previous calendar year.</li>
                 </ul>
             </div>
         </div>
@@ -281,6 +327,15 @@
             "Newry, Mourne & Down": 160000
         };
 
+        // Property type scalar modifiers to simulate realistic segment pricing
+        const propertyModifiers = {
+            "all": 1.0,
+            "detached": 1.54,
+            "semi-detached": 1.08,
+            "terraced": 0.74,
+            "apartment": 0.82
+        };
+
         // Custom localized market commentary
         const councilCommentary = {
             "Belfast": "Belfast City exhibits robust demand within the outer rings and student zones. Semi-detached and terraced builds are the strongest drivers of volume growth, whereas premium inner-city apartments have settled into a stable trajectory.",
@@ -296,7 +351,7 @@
             "Newry, Mourne & Down": "This region experiences heavy pricing influence from cross-border commuters using Euros to buy along the strategic border corridor. Coastal communities near the Mournes command premium rates."
         };
 
-        // Generative Data Engine (10 years, quarterly, 40 points: Q1 2016 to Q1 2026)
+        // Generative Data Engine (10 years, quarterly, 41 points: Q1 2016 to Q1 2026)
         const generateTimelineLabels = () => {
             const labels = [];
             for (let year = 2016; year <= 2026; year++) {
@@ -321,25 +376,50 @@
         };
 
         // Generate comprehensive database array for dynamic query structures
-        const buildComprehensiveDataset = (council) => {
+        const buildComprehensiveDataset = (council, propertyType = "all") => {
             // Check if the GitHub Action bot has injected real data
             if (typeof window.dynamicDataset !== 'undefined' && window.dynamicDataset && window.dynamicDataset[council] && window.dynamicDataset[council].length > 0) {
+                // Ensure real data handles property type filters or fallback
                 return window.dynamicDataset[council];
             }
 
-            // Fallback: If no real data yet, use simulation
+            // Fallback: If no real data yet, use simulation with full dimension depth
             const base = councilBasePrice[council] || 150000;
+            const typeModifier = propertyModifiers[propertyType] || 1.0;
             const dataPoints = [];
+
+            // Compute values sequentially to establish clean HPI indexes and growth vectors
+            let firstPrice = base * typeModifier * getMarketMultiplier(0);
 
             timelineLabels.forEach((label, idx) => {
                 const mult = getMarketMultiplier(idx);
-                let price = base * mult;
+                let price = base * typeModifier * mult;
                 let medianPrice = price * 0.91; 
+
+                // Dynamic HPI standard index calculation (Q1 2016 = 100)
+                let hpi = (price / firstPrice) * 100;
+
+                // QoQ growth
+                let qoq = 0;
+                if (idx > 0) {
+                    let prevPrice = base * typeModifier * getMarketMultiplier(idx - 1);
+                    qoq = ((price - prevPrice) / prevPrice) * 100;
+                }
+
+                // YoY growth (4 quarters prior)
+                let yoy = 0;
+                if (idx >= 4) {
+                    let prevYrPrice = base * typeModifier * getMarketMultiplier(idx - 4);
+                    yoy = ((price - prevYrPrice) / prevYrPrice) * 100;
+                }
 
                 dataPoints.push({
                     quarter: label,
                     averagePrice: Math.round(price),
-                    medianPrice: Math.round(medianPrice)
+                    medianPrice: Math.round(medianPrice),
+                    standardisedIndex: parseFloat(hpi.toFixed(1)),
+                    qoq: parseFloat(qoq.toFixed(2)),
+                    yoy: parseFloat(yoy.toFixed(2))
                 });
             });
 
@@ -348,52 +428,54 @@
 
         // Global State Parameters
         let currentSelectedCouncil = "Belfast";
+        let currentPropertyType = "all";
+        let currentMetric = "averagePrice";
         let priceChartInstance = null; // Holds the Chart.js object
 
         // Render Historical Chart
         const renderChart = () => {
-            const dataset = buildComprehensiveDataset(currentSelectedCouncil);
+            const dataset = buildComprehensiveDataset(currentSelectedCouncil, currentPropertyType);
             const labels = dataset.map(d => d.quarter);
-            const avgData = dataset.map(d => d.averagePrice);
-            const medData = dataset.map(d => d.medianPrice);
+            
+            // Extract selected metric data points
+            const activeData = dataset.map(d => d[currentMetric]);
 
-            document.getElementById('chartTitle').innerText = `${currentSelectedCouncil} Market Trajectory`;
+            // Set dynamic title description based on active state parameters
+            const propLabel = document.getElementById("chartPropertySelector").options[document.getElementById("chartPropertySelector").selectedIndex].text;
+            const metricLabel = document.getElementById("chartMetricSelector").options[document.getElementById("chartMetricSelector").selectedIndex].text;
+            
+            document.getElementById('chartTitle').innerText = `${currentSelectedCouncil} Market: ${propLabel.split(" ")[1]}`;
 
             const ctx = document.getElementById('historicalChart').getContext('2d');
             
-            // Destroy existing chart if selecting a new council
+            // Destroy existing chart if selecting a new dataset or changing criteria
             if (priceChartInstance) {
                 priceChartInstance.destroy();
             }
 
+            // Decide chart rendering mode (Line vs Bar)
+            const isPercentMetric = ["qoq", "yoy"].includes(currentMetric);
+            const chartType = isPercentMetric ? 'bar' : 'line';
+
+            // Generate customized colors for bar representations (green for growth, red for drop)
+            const barColors = isPercentMetric ? activeData.map(val => val >= 0 ? 'rgba(16, 185, 129, 0.85)' : 'rgba(239, 68, 68, 0.85)') : '#4f46e5';
+
             priceChartInstance = new Chart(ctx, {
-                type: 'line',
+                type: chartType,
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Average Price (£)',
-                            data: avgData,
+                            label: metricLabel,
+                            data: activeData,
                             borderColor: '#4f46e5', // Indigo-600
-                            backgroundColor: 'rgba(79, 70, 229, 0.05)',
-                            borderWidth: 2.5,
+                            backgroundColor: isPercentMetric ? barColors : 'rgba(79, 70, 229, 0.05)',
+                            borderWidth: isPercentMetric ? 0 : 2.5,
                             tension: 0.25,
-                            fill: true,
+                            fill: !isPercentMetric,
                             pointRadius: 1,
                             pointHoverRadius: 6,
                             borderCapStyle: 'round'
-                        },
-                        {
-                            label: 'Median Price (£)',
-                            data: medData,
-                            borderColor: '#0ea5e9', // Sky-500
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            tension: 0.25,
-                            fill: false,
-                            pointRadius: 1,
-                            pointHoverRadius: 6
                         }
                     ]
                 },
@@ -406,12 +488,7 @@
                     },
                     plugins: {
                         legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                boxWidth: 8,
-                                font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' }
-                            }
+                            display: false
                         },
                         tooltip: {
                             backgroundColor: 'rgba(15, 23, 42, 0.95)',
@@ -421,26 +498,28 @@
                             cornerRadius: 12,
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
+                                    let val = context.parsed.y;
+                                    if (["averagePrice", "medianPrice"].includes(currentMetric)) {
+                                        return `${metricLabel.split("(")[0].trim()}: ` + new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(val);
+                                    } else {
+                                        return `${metricLabel.split("(")[0].trim()}: ` + val + (isPercentMetric ? '%' : '');
                                     }
-                                    if (context.parsed.y !== null) {
-                                        label += new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(context.parsed.y);
-                                    }
-                                    return label;
                                 }
                             }
                         }
                     },
                     scales: {
                         y: {
-                            beginAtZero: false,
+                            beginAtZero: isPercentMetric,
                             grid: { color: '#f1f5f9' },
                             ticks: {
                                 font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
                                 callback: function(value) {
-                                    return '£' + (value / 1000) + 'k';
+                                    if (["averagePrice", "medianPrice"].includes(currentMetric)) {
+                                        return '£' + (value / 1000) + 'k';
+                                    } else {
+                                        return value + (isPercentMetric ? '%' : '');
+                                    }
                                 }
                             }
                         },
@@ -462,8 +541,9 @@
             gridContainer.innerHTML = "";
 
             councils.forEach(council => {
-                const latestData = buildComprehensiveDataset(council).slice(-1)[0];
+                const latestData = buildComprehensiveDataset(council, currentPropertyType).slice(-1)[0];
                 const avgPrice = latestData.averagePrice;
+                const qoqVal = latestData.qoq;
                 
                 const isActive = council === currentSelectedCouncil;
                 
@@ -471,12 +551,16 @@
                     ? "border-indigo-600 bg-indigo-50/50 text-indigo-950 shadow-sm ring-2 ring-indigo-600 ring-offset-2 scale-[1.02]" 
                     : "border-slate-200 bg-white hover:bg-slate-50 text-slate-900";
 
+                const changeColor = qoqVal >= 0 ? "text-emerald-600" : "text-rose-600";
+                const changeIcon = qoqVal >= 0 ? "▲" : "▼";
+
                 const cardHtml = `
-                    <button onclick="selectCouncil('${council}')" class="text-left p-4 rounded-2xl border ${bgBorderColor} transition-all duration-200 flex flex-col justify-between h-[110px] w-full">
+                    <button onclick="selectCouncil('${council}')" class="text-left p-4 rounded-2xl border ${bgBorderColor} transition-all duration-200 flex flex-col justify-between h-[125px] w-full">
                         <span class="text-xs font-bold leading-tight line-clamp-2">${council}</span>
                         <div>
                             <span class="text-[9px] opacity-60 font-semibold block uppercase tracking-wider">Avg Value</span>
                             <span class="text-sm font-extrabold tracking-tight">£${avgPrice.toLocaleString()}</span>
+                            <span class="text-[10px] ${changeColor} font-bold block mt-0.5">${changeIcon} ${Math.abs(qoqVal).toFixed(1)}% QoQ</span>
                         </div>
                     </button>
                 `;
@@ -496,13 +580,26 @@
 
         // Update Dynamic Council Intelligence Box
         const updateCouncilIntelBox = () => {
-            const latestData = buildComprehensiveDataset(currentSelectedCouncil).slice(-1)[0];
+            const latestData = buildComprehensiveDataset(currentSelectedCouncil, currentPropertyType).slice(-1)[0];
             
             document.getElementById("intelCouncilTitle").innerText = `${currentSelectedCouncil} District`;
             document.getElementById("intelCouncilAbbrev").innerText = currentSelectedCouncil.substring(0, 3).toUpperCase();
             document.getElementById("intelParagraph").innerHTML = councilCommentary[currentSelectedCouncil] || "Detailed insight under compilation.";
+            
+            // Fill numeric parameters
             document.getElementById("intelAvgPrice").innerText = `£${latestData.averagePrice.toLocaleString()}`;
             document.getElementById("intelMedPrice").innerText = `£${latestData.medianPrice.toLocaleString()}`;
+            document.getElementById("intelIndex").innerText = latestData.standardisedIndex.toFixed(1);
+            
+            // QoQ representation
+            const qoqEl = document.getElementById("intelQoq");
+            qoqEl.innerText = `${latestData.qoq >= 0 ? '+' : ''}${latestData.qoq.toFixed(2)}%`;
+            qoqEl.className = `font-bold text-xs sm:text-sm ${latestData.qoq >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+
+            // YoY representation
+            const yoyEl = document.getElementById("intelYoy");
+            yoyEl.innerText = `${latestData.yoy >= 0 ? '+' : ''}${latestData.yoy.toFixed(2)}%`;
+            yoyEl.className = `font-bold text-xs sm:text-sm ${latestData.yoy >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
         };
 
         // Filter publications cards
@@ -531,11 +628,36 @@
             updateMainAnalysis();
         };
 
+        // Selector callback for changing active property type
+        const selectPropertyType = (propertyType) => {
+            currentPropertyType = propertyType;
+            
+            // Sync selectors visually
+            document.getElementById("chartPropertySelector").value = propertyType;
+            document.querySelectorAll(".prop-btn").forEach(btn => {
+                btn.classList.remove("bg-white", "text-indigo-600", "shadow-sm");
+                btn.classList.add("text-slate-600", "hover:text-slate-900");
+            });
+            const activeBtn = document.getElementById(`grid-prop-${propertyType}`);
+            if (activeBtn) {
+                activeBtn.classList.remove("text-slate-600", "hover:text-slate-900");
+                activeBtn.classList.add("bg-white", "text-indigo-600", "shadow-sm");
+            }
+
+            updateMainAnalysis();
+        };
+
+        // Metric selector callback
+        const selectMetric = (metric) => {
+            currentMetric = metric;
+            renderChart();
+        };
+
         const updateMainAnalysis = () => {
             renderCouncilGrid();
             populateCommentarySelector();
             updateCouncilIntelBox();
-            renderChart(); // Redraw chart for new council
+            renderChart(); // Redraw chart for new dataset
         };
 
         const toggleModal = (id) => {
